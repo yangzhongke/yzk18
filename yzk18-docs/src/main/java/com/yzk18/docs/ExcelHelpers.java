@@ -1,0 +1,326 @@
+package com.yzk18.docs;
+
+import com.yzk18.commons.CommonHelpers;
+import com.yzk18.commons.IOHelpers;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
+
+public class ExcelHelpers {
+    public static Workbook createXLSX()
+    {
+        try {
+            return WorkbookFactory.create(true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Workbook createXLS()
+    {
+        try {
+            return WorkbookFactory.create(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static CellStyle createCellStyle(Cell cell)
+    {
+        CellStyle cellStyle = cell.getSheet().getWorkbook().createCellStyle();
+        return  cellStyle;
+    }
+
+    public static void setCellValue(Cell cell, Object value)
+    {
+        if(value==null)
+        {
+            cell.setBlank();
+        }
+        else if(value instanceof  CharSequence)
+        {
+            cell.setCellValue(value.toString());
+        }
+        else if(value instanceof  Number)
+        {
+            Number number = (Number)value;
+            cell.setCellValue(number.doubleValue());
+        }
+        else if(value instanceof Boolean)
+        {
+            Boolean b = (Boolean)value;
+            cell.setCellValue(b);
+        }
+        else if(value instanceof LocalDate)
+        {
+            //cell.getCellStyle() doesn't work,
+            CellStyle cellStyle = createCellStyle(cell);
+            cellStyle.setDataFormat((short)0xe);
+            cell.setCellStyle(cellStyle);
+            LocalDate d= (LocalDate)value;
+            cell.setCellValue(d);
+        }
+        else if(value instanceof LocalDateTime)
+        {
+            CellStyle cellStyle = createCellStyle(cell);
+            cellStyle.setDataFormat((short)0x16);
+            cell.setCellStyle(cellStyle);
+            LocalDateTime dt= (LocalDateTime)value;
+            cell.setCellValue(dt);
+        }
+        else if(value instanceof Calendar)
+        {
+            CellStyle cellStyle = createCellStyle(cell);
+            cellStyle.setDataFormat((short)0x16);
+            cell.setCellStyle(cellStyle);
+            Calendar d= (Calendar)value;
+            cell.setCellValue(d);
+        }
+        else if(value instanceof Date)
+        {
+            CellStyle cellStyle = createCellStyle(cell);
+            cellStyle.setDataFormat((short)0xe);
+            cell.setCellStyle(cellStyle);
+            Date d= (Date)value;
+            cell.setCellValue(d);
+        }
+        else
+        {
+            cell.setCellValue(value.toString());
+        }
+    }
+
+    public static void setCellValue(Sheet sheet, int rowIndex, int colIndex, Object value)
+    {
+        Row row = sheet.getRow(rowIndex);
+        if(row==null)
+        {
+            row = sheet.createRow(rowIndex);
+        }
+        Cell cell = row.getCell(colIndex);
+        if(cell==null)
+        {
+            cell = row.createCell(colIndex);
+        }
+        setCellValue(cell,value);
+    }
+
+    public static Cell getCell(Sheet sheet, int rowIndex, int colIndex)
+    {
+        Row row = sheet.getRow(rowIndex);
+        if(row==null)
+        {
+            return null;
+        }
+        return row.getCell(colIndex);
+    }
+
+    public static Integer getCellIntValue(Sheet sheet, int rowIndex, int colIndex)
+    {
+        Cell cell = getCell(sheet,rowIndex, colIndex);
+        if(cell==null)
+        {
+            return null;
+        }
+        return getCellIntValue(cell);
+    }
+
+    public static Integer getCellIntValue(Cell cell)
+    {
+        CellType cellType = cell.getCellType();
+        switch (cellType)
+        {
+            case BLANK:
+            case ERROR:
+            case _NONE:
+            case FORMULA:
+                return null;
+            case BOOLEAN:
+                boolean b = cell.getBooleanCellValue();
+                return b?1:0;
+            case NUMERIC:
+                double d = cell.getNumericCellValue();
+                return (int)d;
+            case STRING:
+                String s = cell.getStringCellValue();
+                return CommonHelpers.toInt(s);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public static Double getCellDoubleValue(Sheet sheet, int rowIndex, int colIndex)
+    {
+        Cell cell = getCell(sheet,rowIndex, colIndex);
+        if(cell==null)
+        {
+            return null;
+        }
+        return getCellDoubleValue(cell);
+    }
+
+    public static Double getCellDoubleValue(Cell cell)
+    {
+        CellType cellType = cell.getCellType();
+        switch (cellType)
+        {
+            case BLANK:
+            case ERROR:
+            case _NONE:
+            case FORMULA:
+                return null;
+            case BOOLEAN:
+                boolean b = cell.getBooleanCellValue();
+                return b?1.0:0.0;
+            case NUMERIC:
+                double d = cell.getNumericCellValue();
+                return d;
+            case STRING:
+                String s = cell.getStringCellValue();
+                return CommonHelpers.toDouble(s);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public static String getCellStringValue(Sheet sheet, int rowIndex, int colIndex)
+    {
+        Cell cell = getCell(sheet,rowIndex, colIndex);
+        if(cell==null)
+        {
+            return null;
+        }
+        return getCellStringValue(cell);
+    }
+
+    public static String getCellStringValue(Cell cell)
+    {
+        CellType cellType = cell.getCellType();
+        switch (cellType)
+        {
+            case BLANK:
+            case ERROR:
+            case _NONE:
+            case FORMULA:
+                return null;
+            case BOOLEAN:
+                boolean b = cell.getBooleanCellValue();
+                return Boolean.toString(b);
+            case NUMERIC:
+                double d = cell.getNumericCellValue();
+                return Double.toString(d);
+            case STRING:
+                String s = cell.getStringCellValue();
+                return s;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public static LocalDate getCellLocalDateValue(Sheet sheet, int rowIndex, int colIndex)
+    {
+        Cell cell = getCell(sheet,rowIndex, colIndex);
+        if(cell==null)
+        {
+            return null;
+        }
+        return getCellLocalDateValue(cell);
+    }
+
+    public static LocalDate getCellLocalDateValue(Cell cell)
+    {
+        CellType cellType = cell.getCellType();
+        switch (cellType)
+        {
+            case BLANK:
+            case ERROR:
+            case _NONE:
+            case FORMULA:
+            case BOOLEAN:
+                return null;
+            case NUMERIC:
+                LocalDateTime d = cell.getLocalDateTimeCellValue();
+                return d.toLocalDate();
+            case STRING:
+                String s = cell.getStringCellValue();
+                return CommonHelpers.toLocalDate(s);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public static LocalDateTime getCellLocalDateTimeValue(Sheet sheet, int rowIndex, int colIndex)
+    {
+        Cell cell = getCell(sheet,rowIndex, colIndex);
+        if(cell==null)
+        {
+            return null;
+        }
+        return getCellLocalDateTimeValue(cell);
+    }
+
+    public static LocalDateTime getCellLocalDateTimeValue(Cell cell)
+    {
+        CellType cellType = cell.getCellType();
+        switch (cellType)
+        {
+            case BLANK:
+            case ERROR:
+            case _NONE:
+            case FORMULA:
+            case BOOLEAN:
+                return null;
+            case NUMERIC:
+                LocalDateTime d = cell.getLocalDateTimeCellValue();
+                return d;
+            case STRING:
+                String s = cell.getStringCellValue();
+                return CommonHelpers.toLocalDateTime(s);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public static void saveToFile(Workbook workbook,String filename)
+    {
+        String ext = IOHelpers.getExtension(filename);
+        if(workbook instanceof XSSFWorkbook)
+        {
+            if(!"xlsx".equalsIgnoreCase(ext))
+            {
+                throw new IllegalArgumentException("extension of filename should be xlsx");
+            }
+        }
+        if(workbook instanceof HSSFWorkbook)
+        {
+            if(!"xls".equalsIgnoreCase(ext))
+            {
+                throw new IllegalArgumentException("extension of filename should be xls");
+            }
+        }
+        IOHelpers.mkParentDirs(filename);
+        try(FileOutputStream fos = new FileOutputStream(filename))
+        {
+            workbook.write(fos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Workbook openFile(String filename)
+    {
+        try {
+            return WorkbookFactory.create(new File(filename));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
