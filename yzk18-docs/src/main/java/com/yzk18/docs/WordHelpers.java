@@ -2,6 +2,7 @@ package com.yzk18.docs;
 
 import com.yzk18.commons.*;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.ooxml.POIXMLDocument;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.util.Units;
@@ -11,7 +12,6 @@ import org.apache.poi.xwpf.usermodel.*;
 import java.awt.*;
 import java.io.*;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class WordHelpers {
@@ -208,5 +208,10 @@ public class WordHelpers {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void close(POIXMLDocument doc)
+    {
+        CommonHelpers.close(doc);
     }
 }

@@ -2,9 +2,7 @@ package com.yzk18.commons;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Arrays;
 
 public class ImageHelpers {
@@ -81,6 +79,31 @@ public class ImageHelpers {
             return new Dimension(img.getWidth(),img.getHeight());
         }
         catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public  static void writeToFile(BufferedImage img,String formatName,String fileName)
+    {
+        IOHelpers.mkParentDirs(fileName);
+        try
+        {
+            ImageIO.write(img,formatName,new File(fileName));
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static byte[] toByteArray(BufferedImage img,String formatName)
+    {
+        try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
+        {
+            ImageIO.write(img,formatName,outputStream);
+            return outputStream.toByteArray();
+        } catch (IOException e)
         {
             throw new RuntimeException(e);
         }

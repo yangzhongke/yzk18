@@ -334,4 +334,9 @@ public class ExcelHelpers {
             throw new RuntimeException(e);
         }
     }
+
+    public static void close(Workbook wb)
+    {
+        CommonHelpers.close(wb);
+    }
 }
