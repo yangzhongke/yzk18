@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 
-public class TestExcel1 {
+public class TestExcelReadWrite1 {
     public static void main(String[] args) {
         //用户只要通过x，y坐标赋值即可，自动创建createSheet、createRow等，还可以根据数据类型自动设置CellType
         {

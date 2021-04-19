@@ -9,6 +9,7 @@ import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.util.Units;
+import org.apache.poi.xddf.usermodel.chart.XDDFChart;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.*;
@@ -187,6 +188,14 @@ public class WordHelpers {
     public static void forEachRun(XWPFTableCell cell, Consumer<? super XWPFRun> action)
     {
         cell.getParagraphs().forEach(p->p.getRuns().forEach(action));
+    }
+
+    public static XWPFChart createChart(XWPFDocument doc, int width, int height) {
+        try {
+            return doc.createChart(Units.toEMU(width),Units.toEMU(height));
+        } catch (InvalidFormatException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void saveToFile(XWPFDocument doc,String filename)

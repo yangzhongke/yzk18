@@ -1,17 +1,13 @@
 import com.yzk18.commons.DesktopHelpers;
 import com.yzk18.commons.IOHelpers;
-import com.yzk18.docs.WordChartBuilder;
+import com.yzk18.docs.ChartFromArrayBuilder;
 import com.yzk18.docs.WordHelpers;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xwpf.usermodel.*;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 
-public class TestWord1 {
+public class TestWordChartArray1 {
 
 
     public static void main(String[] args) {
@@ -75,20 +71,15 @@ public class TestWord1 {
         Double[] sales1 = {3.1,5.2,8.0,9.0,3.0,5.0,8.0,9.0,3.0,5.0,8.0,0.9};
         Double[] sales2={5.0,81.0,4.0,9.8,1.8,3.9,5.8,81.8,4.8,9.8,1.8,3.9};
 
-        WordChartBuilder<Double> chartBuilder = new WordChartBuilder<>(ChartTypes.LINE);
-        XWPFChart chart = chartBuilder
+        ChartFromArrayBuilder<Double> chartBuilder = new ChartFromArrayBuilder<>(ChartTypes.LINE);
+        XWPFChart chart = WordHelpers.createChart(doc,500,300);
+        chart.setTitleText("销售龙虎榜");
+        chart.getOrAddLegend().setPosition(LegendPosition.LEFT);
+        chartBuilder.setCategoryNames(monthNames)
                 .putValues("小王",sales1)
                 .putValues("小李",sales2)
                 .setCategoryAxisTitle("月份").setValueAxisTitle("销量")
-               .setSize(500,300)
-                .setCategoryNames(monthNames)
-            .build(doc);
-        chart.setTitleText("销售龙虎榜");
-        chart.getOrAddLegend().setPosition(LegendPosition.LEFT);
-        /*
-        chart.setChartHeight(Units.toEMU(100));
-        chart.setChartWidth(Units.toEMU(300));*/
-
+            .build(chart);
 
         //todo: chart. doc.createChart().createData()
         WordHelpers.saveToFile(doc,"d:/temp/a/a.docX");

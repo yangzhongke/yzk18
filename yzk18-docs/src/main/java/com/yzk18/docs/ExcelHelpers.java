@@ -4,6 +4,9 @@ import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.IOHelpers;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFChart;
+import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -15,22 +18,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ExcelHelpers {
-    public static Workbook createXLSX()
+    public static HSSFWorkbook createXLS()
     {
-        try {
-            return WorkbookFactory.create(true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new HSSFWorkbook();
     }
 
-    public static Workbook createXLS()
+    public static XSSFWorkbook createXLSX()
     {
-        try {
-            return WorkbookFactory.create(false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new XSSFWorkbook();
     }
 
     public static CellStyle createCellStyle(Cell cell)
@@ -287,6 +282,22 @@ public class ExcelHelpers {
             default:
                 throw new IllegalArgumentException();
         }
+    }
+
+    public static XSSFChart createChart(Sheet sheet,int col1, int row1, int col2, int row2)
+    {
+        return createChart(sheet,0,0,0,0,col1,row1,col2,row2);
+    }
+
+    public static XSSFChart createChart(Sheet sheet,int dx1, int dy1, int dx2, int dy2,
+                                        int col1, int row1, int col2, int row2)
+    {
+        XSSFDrawing drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
+        //前四个默认0，[0,5]：从0列5行开始;[7,26]:宽度7个单元格，26向下扩展到26行
+        //默认宽度(14-8)*12
+        XSSFClientAnchor anchor = drawing.createAnchor(dx1,dy1,dx2,dy2,col1,row1,col2,row2);
+        XSSFChart chart = drawing.createChart(anchor);
+        return chart;
     }
 
     public static void saveToFile(Workbook workbook,String filename)
