@@ -1,6 +1,9 @@
 package com.yzk18.docs;
 
+import com.yzk18.commons.CommonHelpers;
 import org.apache.poi.xwpf.usermodel.*;
+
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +13,18 @@ import java.util.stream.Stream;
  * adapted from: https://blog.csdn.net/qq_38148461/article/details/93658114
  */
 public class WordTemplateRenderer {
-    public static void render(XWPFDocument document, Map<String, String> map)
+    public static void render(String templateFilename,Map<String,Object> data,String outFile)
+    {
+        try(XWPFDocument doc = WordHelpers.openDocx(templateFilename))
+        {
+            WordTemplateRenderer.render(doc,data);
+            WordHelpers.saveToFile(doc,outFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void render(XWPFDocument document, Map<String, Object> map)
     {
         //1. process tables
         Iterator<XWPFTable> itTable = document.getTablesIterator();
@@ -25,39 +39,51 @@ public class WordTemplateRenderer {
         modifyParagraphs(document.getParagraphsIterator(),map);
     }
 
-    public static void modifyParagraphs(Iterator<XWPFParagraph> paragraphs, Map<String, String> data)
+    public static void modifyParagraphs(Iterator<XWPFParagraph> paragraphs, Map<String, Object> data)
     {
         while (paragraphs.hasNext())
         {
             XWPFParagraph paragraph = paragraphs.next();
             List<XWPFRun> runs = paragraph.getRuns();
-            for (Map.Entry<String, String> kv : data.entrySet())
+            for (Map.Entry<String, Object> kv : data.entrySet())
             {
-                String oldText = kv.getKey();
-                String newText = kv.getValue();
-                replaceText(paragraph, runs, oldText, newText);
+                String target = kv.getKey();
+                Object replacement = kv.getValue();
+                replaceText(paragraph, runs, target, replacement);
             }
         }
     }
 
-    private static void replaceText(XWPFParagraph xwpfParagraph, List<XWPFRun> runs, String oldText, String newText) {
-        TextSegment txtSegment = xwpfParagraph.searchText(oldText, new PositionInParagraph());
-        if(txtSegment==null)
+    private static void replaceText(XWPFParagraph paragraph, List<XWPFRun> runs,
+                                    String target, Object replacement) {
+        TextSegment foundSegment = paragraph.searchText(target, new PositionInParagraph());
+        if(foundSegment==null)//not found
         {
             return;
         }
-        int beginRun = txtSegment.getBeginRun();
-        int endRun = txtSegment.getEndRun();
-        StringBuilder b = new StringBuilder();
+        int beginRun = foundSegment.getBeginRun();
+        int endRun = foundSegment.getEndRun();
+        StringBuilder foundText = new StringBuilder();//replaced text of foundSegment
         for (int runPos = beginRun; runPos <= endRun; runPos++)
         {
             XWPFRun run = runs.get(runPos);
-            b.append(run.getText(0));
+            foundText.append(run.getText(0));
         }
-        String connectedRuns = b.toString();
-        String replaced = connectedRuns.replace(oldText, newText);
         XWPFRun partOne = runs.get(beginRun);
-        partOne.setText(replaced, 0);
+        if(replacement instanceof  byte[])
+        {
+            byte[] imgBytes = (byte[])replacement;
+            partOne.setText("",0);//clear
+            WordHelpers.addPicture(partOne,imgBytes);
+        }
+        else
+        {
+            String replacementStr = CommonHelpers.toString(replacement);
+            String replaced = foundText.toString().replace(target, replacementStr);
+            partOne.setText(replaced, 0);
+        }
+
+        //remove the remnant part of target, like "{name}"
         for (int runPos = beginRun + 1; runPos <= endRun; runPos++)
         {
             XWPFRun partNext = runs.get(runPos);
@@ -65,7 +91,7 @@ public class WordTemplateRenderer {
         }
         if (endRun <= runs.size())
         {
-            replaceText(xwpfParagraph, runs, oldText, newText);
+            replaceText(paragraph, runs, target, replacement);
         }
     }
 }

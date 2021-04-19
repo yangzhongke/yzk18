@@ -1,16 +1,10 @@
 package com.yzk18.docs;
 
-import com.yzk18.commons.CommonHelpers;
-import com.yzk18.commons.IOHelpers;
-import com.yzk18.commons.ImageHelpers;
-import com.yzk18.commons.ImageType;
-import org.apache.commons.io.IOUtils;
+import com.yzk18.commons.*;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.util.Units;
-import org.apache.poi.xddf.usermodel.chart.XDDFChart;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.*;
 
