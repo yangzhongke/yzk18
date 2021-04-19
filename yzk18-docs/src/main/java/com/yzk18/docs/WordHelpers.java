@@ -17,6 +17,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import java.awt.*;
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class WordHelpers {
