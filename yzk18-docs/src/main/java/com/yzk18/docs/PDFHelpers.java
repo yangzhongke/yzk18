@@ -45,6 +45,17 @@ public class PDFHelpers {
         }
     }
 
+    public static String parseText(PDDocument pdfDoc)
+    {
+        StringBuilder sb = new StringBuilder();
+        for(PDPage page : pdfDoc.getPages())
+        {
+            String txt = parseText(page);
+            sb.append(txt).append("\r\n");
+        }
+        return sb.toString();
+    }
+
     public static List<byte[]> parseImages(PDPage pdPage,String formatName)
     {
         try(PDDocument pdDoc = new PDDocument())
