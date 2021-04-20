@@ -108,4 +108,40 @@ public class ImageHelpers {
             throw new RuntimeException(e);
         }
     }
+
+    public static BufferedImage toBufferedImage(byte[] bytes)
+    {
+        try(InputStream inStream = new ByteArrayInputStream(bytes))
+        {
+            return ImageIO.read(inStream);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static BufferedImage toBufferedImage(InputStream inStream)
+    {
+        try
+        {
+            return ImageIO.read(inStream);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static BufferedImage toBufferedImage(File file)
+    {
+        try(InputStream inStream = new FileInputStream(file))
+        {
+            return ImageIO.read(inStream);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 }
