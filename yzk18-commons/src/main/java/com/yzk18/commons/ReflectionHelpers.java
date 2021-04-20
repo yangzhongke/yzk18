@@ -100,6 +100,11 @@ public class ReflectionHelpers {
     }
     public static void setPropertyValue(Object obj, PropertyDescriptor propDesc,Object value)
     {
+        Class propType = propDesc.getPropertyType();
+        if(value!=null&&propType!=value.getClass())
+        {
+            value = CommonHelpers.convert(value,propType);
+        }
         try
         {
             propDesc.getWriteMethod().invoke(obj,value);

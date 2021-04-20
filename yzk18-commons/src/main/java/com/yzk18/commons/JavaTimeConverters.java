@@ -4,10 +4,8 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.AbstractConverter;
 import org.apache.commons.beanutils.converters.DateConverter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.sql.Timestamp;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -16,6 +14,8 @@ import java.util.TimeZone;
 
 //from:https://www.geek-share.com/detail/2627409564.html
 public class JavaTimeConverters {
+
+
 
     public static void registerAll(String[] datePatterns) {
         final DateConverter dateConverter = new DateConverter();
@@ -40,14 +40,29 @@ public class JavaTimeConverters {
 
         @Override
         protected <T> T convertToType(Class<T> type, Object value) throws Throwable {
-            if (!(value instanceof String)) {
+            if(value instanceof  CharSequence)
+            {
+                String valueAsString = value.toString();
+                if (valueAsString.length() > MAX_LOCAL_DATE_LENGTH) {
+                    valueAsString = valueAsString.substring(0, MAX_LOCAL_DATE_LENGTH);
+                }
+                return type.cast(LocalDate.parse(valueAsString,dtf));
+            }
+            else if(value instanceof  java.sql.Date)//java.sql.Date should locate before java.util.Date
+            {
+                java.sql.Date sqlDate = (java.sql.Date)value;
+                return type.cast(sqlDate.toLocalDate());
+            }
+            else if(value instanceof  Date)
+            {
+                Date date = (Date) value;
+                LocalDate localDT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                return type.cast(localDT);
+            }
+            else
+            {
                 throw conversionException(type, value);
             }
-            String valueAsString = (String) value;
-            if (valueAsString.length() > MAX_LOCAL_DATE_LENGTH) {
-                valueAsString = valueAsString.substring(0, MAX_LOCAL_DATE_LENGTH);
-            }
-            return type.cast(LocalDate.parse(valueAsString,dtf));
         }
 
         @Override
@@ -68,16 +83,33 @@ public class JavaTimeConverters {
 
         @Override
         protected <T> T convertToType(Class<T> type, Object value) throws Throwable {
-            if (!(value instanceof String)) {
+            if(value instanceof  CharSequence)
+            {
+                String paramValueString = value.toString();
+                try {
+                    return type.cast(LocalDateTime.parse(paramValueString,dtf));
+                } catch (DateTimeParseException e) {
+                    //We drop the timezone info from the String:
+                    return type.cast(ZonedDateTime.parse(paramValueString).toLocalDateTime());
+                }
+            }
+            else if(value instanceof  java.sql.Date)//java.sql.Date should locate before java.util.Date
+            {
+                java.sql.Date sqlDate = (java.sql.Date)value;
+                Timestamp timestamp = new Timestamp(sqlDate.getTime());
+                return type.cast(timestamp.toLocalDateTime());
+            }
+            else if(value instanceof  Date)
+            {
+                Date date = (Date) value;
+                LocalDateTime localDT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                return type.cast(localDT);
+            }
+            else
+            {
                 throw conversionException(type, value);
             }
-            String paramValueString = (String) value;
-            try {
-                return type.cast(LocalDateTime.parse(paramValueString,dtf));
-            } catch (DateTimeParseException e) {
-                //We drop the timezone info from the String:
-                return type.cast(ZonedDateTime.parse(paramValueString).toLocalDateTime());
-            }
+
         }
 
         @Override

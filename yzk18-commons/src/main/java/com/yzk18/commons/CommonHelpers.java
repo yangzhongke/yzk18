@@ -15,13 +15,13 @@ import java.util.Scanner;
 
 
 public class CommonHelpers {
-
     static
     {
         final String[] datePatterns = new String[] { "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd",
                 "HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSS" };
         JavaTimeConverters.registerAll(datePatterns);
     }
+
     public static Gson createGson()
     {
         Gson gson = Converters.registerAll(new GsonBuilder()).create();
