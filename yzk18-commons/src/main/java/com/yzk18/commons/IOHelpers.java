@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.mozilla.intl.chardet.nsDetector;
 
-import java.awt.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +49,10 @@ public class IOHelpers {
             throw new RuntimeException(e);
         }
     }
+    public static String readAllText(File file)
+    {
+        return readAllText(file.toString());
+    }
 
     public static String readAllText(String file)
     {
@@ -60,14 +63,25 @@ public class IOHelpers {
         }
         return readAllText(file,charsetName);
     }
+
+    public static String readAllText(File file,String charsetName)
+    {
+        return  readAllText(file.toString(),charsetName);
+    }
+
     public static String readAllText(String file,String charsetName)
     {
-        try(FileInputStream fis = new FileInputStream((file)))
+        try(FileInputStream fis = new FileInputStream(file))
         {
             return IOUtils.toString(fis,charsetName);
         }catch (IOException e) {
            throw new RuntimeException(e);
         }
+    }
+
+    public static String[] readAllLines(File file)
+    {
+        return readAllLines(file.toString());
     }
 
     public static String[] readAllLines(String file)
@@ -79,6 +93,12 @@ public class IOHelpers {
         }
         return readAllLines(file,charsetName);
     }
+
+    public static String[] readAllLines(File file,String charsetName)
+    {
+        return readAllLines(file.toString(),charsetName);
+    }
+
     public static String[] readAllLines(String file,String charsetName)
     {
         try(FileInputStream fis = new FileInputStream((file)))
@@ -88,6 +108,11 @@ public class IOHelpers {
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static byte[] readAllBytes(File file)
+    {
+        return readAllBytes(file.toString());
     }
 
     public static byte[] readAllBytes(String file)
@@ -130,6 +155,10 @@ public class IOHelpers {
         }
     }
 
+    public static void writeAllText(File file,String text,String charsetName)
+    {
+        writeAllText(file.toString(),text,charsetName);
+    }
 
     public static void writeAllText(String fileName,String text,String charsetName)
     {
@@ -142,9 +171,19 @@ public class IOHelpers {
         }
     }
 
+    public static void writeAllText(File file,String text)
+    {
+        writeAllText(file.toString(),text);
+    }
+
     public static void writeAllText(String fileName,String text)
     {
         writeAllText(fileName, text,"UTF-8");
+    }
+
+    public static void writeAllLines(File file,String[] lines,String charsetName)
+    {
+        writeAllLines(file.toString(),lines,charsetName);
     }
 
     public static void writeAllLines(String fileName,String[] lines,String charsetName)
@@ -159,9 +198,19 @@ public class IOHelpers {
         }
     }
 
+    public static void writeAllLines(File file,String[] lines)
+    {
+        writeAllLines(file.toString(),lines);
+    }
+
     public static void writeAllLines(String fileName,String[] lines)
     {
         writeAllLines(fileName,lines,"UTF-8");
+    }
+
+    public static void writeAllBytes(File file, byte[] bytes)
+    {
+        writeAllBytes(file.toString(),bytes);
     }
 
     public static void writeAllBytes(String fileName, byte[] bytes)
