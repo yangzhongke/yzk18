@@ -142,8 +142,7 @@ public class GUI {
         {
             throw new IllegalArgumentException("labels.length<initialValues.length");
         }
-        Dimension screenSize = getScreenSize();
-        Dimension halfSize = new Dimension(screenSize.width/2,screenSize.height/2);
+        Dimension halfSize = getDefaultDialogSize();
 
         int fieldsCount = labels.length;
 
@@ -214,8 +213,7 @@ public class GUI {
 
     public static Map<String,String> multiInputBox(Object message,Map<String,Object> data)
     {
-        Dimension screenSize = getScreenSize();
-        Dimension halfSize = new Dimension(screenSize.width/2,screenSize.height/2);
+        Dimension halfSize = getDefaultDialogSize();
 
         JPanel rootPanel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
@@ -437,8 +435,7 @@ public class GUI {
 
     public static String imgBox(Object message,String imgPath,String... buttons)
     {
-        Dimension screenSize = getScreenSize();
-        Dimension halfSize = new Dimension(screenSize.width/2,screenSize.height/2);
+        Dimension halfSize = getDefaultDialogSize();
 
         ImageIcon imgIcon = new ImageIcon(imgPath);
 
@@ -481,8 +478,7 @@ public class GUI {
     }
     public static String textBox(Object message,String text,String... buttons)
     {
-        Dimension screenSize = getScreenSize();
-        Dimension halfSize = new Dimension(screenSize.width/2,screenSize.height/2);
+        Dimension halfSize = getDefaultDialogSize();
 
         JPanel panel = new JPanel();
         panel.setPreferredSize(halfSize);
@@ -510,6 +506,11 @@ public class GUI {
         {
             return buttons[result];
         }
+    }
+
+    private static Dimension getDefaultDialogSize() {
+        Dimension screenSize = getScreenSize();
+        return new Dimension(screenSize.width / 2, screenSize.height / 2);
     }
 
     private static  void setFileFilter(JFileChooser fileChooser,String... extensions)
@@ -614,6 +615,53 @@ public class GUI {
             return null;
         }
         return fileChooser.getSelectedFile().toString();
+    }
+
+    private static ProgressDialog progressDialog;
+    public static void showProgressDialog(Object message,int maximum,int value)
+    {
+        SwingUtilities.invokeLater(()->{
+            if(progressDialog==null)
+            {
+                progressDialog = new ProgressDialog();
+                progressDialog.setModal(false);
+                progressDialog.setLocationRelativeTo(null);//screen center
+            }
+            progressDialog.setMessage(CommonHelpers.toString(message));
+            progressDialog.setProgress(maximum, value);
+            progressDialog.pack();
+            progressDialog.setVisible(true);
+        });
+    }
+
+    public static void closeProgressDialog()
+    {
+        progressDialog.setVisible(false);
+        progressDialog.dispose();
+        progressDialog = null;
+    }
+
+    private static IndeterminateProgressDialog indeterminateProgressDialog;
+    public static void showIndeterminateProgressDialog(Object message)
+    {
+        SwingUtilities.invokeLater(()->{
+            if(indeterminateProgressDialog==null)
+            {
+                indeterminateProgressDialog = new IndeterminateProgressDialog();
+                indeterminateProgressDialog.setModal(false);
+                indeterminateProgressDialog.setLocationRelativeTo(null);//screen center
+            }
+            indeterminateProgressDialog.setMessage(CommonHelpers.toString(message));
+            indeterminateProgressDialog.pack();
+            indeterminateProgressDialog.setVisible(true);
+        });
+    }
+
+    public static void closeIndeterminateProgressDialog()
+    {
+        indeterminateProgressDialog.setVisible(false);
+        indeterminateProgressDialog.dispose();
+        indeterminateProgressDialog = null;
     }
 
     public static Dimension getScreenSize()
