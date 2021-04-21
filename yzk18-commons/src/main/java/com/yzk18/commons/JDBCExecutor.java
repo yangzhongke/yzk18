@@ -1,7 +1,5 @@
 package com.yzk18.commons;
 
-import org.apache.commons.beanutils.ConvertUtils;
-
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
@@ -13,13 +11,15 @@ public class JDBCExecutor {
     private String userName;
     private String password;
 
-    public JDBCExecutor(String url, String userName, String password) {
+    public JDBCExecutor(String url, String userName, String password)
+    {
         this.url = url;
         this.userName = userName;
         this.password = password;
     }
 
-    private String[] getColumnNames(ResultSetMetaData rsmd) throws SQLException {
+    private String[] getColumnNames(ResultSetMetaData rsmd) throws SQLException
+    {
         List<String> list =new LinkedList<>();
         for(int i=0;i< rsmd.getColumnCount();i++)
         {
@@ -29,7 +29,7 @@ public class JDBCExecutor {
         return list.toArray(new String[list.size()]);
     }
 
-    public List<Map<String,Object>> queryAsMap(String sql, Object... parameters)
+    public List<JDBCRow> queryAsMap(String sql, Object... parameters)
     {
         try(Connection conn = DriverManager.getConnection(url,this.userName,this.password);
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -43,15 +43,15 @@ public class JDBCExecutor {
             {
                 ResultSetMetaData rsmd = rs.getMetaData();
                 String[] colNames = getColumnNames(rsmd);
-                List<Map<String,Object>> rows = new LinkedList<>();
+                List<JDBCRow> rows = new LinkedList<>();
                 while(rs.next())
                 {
                     //column name is CaseInsensitive
-                    LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<Object>();
+                    JDBCRow row = new JDBCRow();
                     for(int i=0;i<colNames.length;i++)
                     {
                         Object value = rs.getObject(i+1);
-                        row.put(colNames[i],value);
+                        row.setObject(colNames[i],value);
                     }
                     rows.add(row);
                 }
@@ -81,16 +81,16 @@ public class JDBCExecutor {
     //becuase Java doesn't support new T[3], so the return value should be List<T> instead of T[]
     public <T> List<T> query(Class<T> clz, String sql, Object... parameters)
     {
-        List<Map<String,Object>> rows = queryAsMap(sql,parameters);
+        List<JDBCRow> rows = queryAsMap(sql,parameters);
         List<T> results = new LinkedList<T>();
-        for(Map<String,Object> row : rows)
+        for(JDBCRow row : rows)
         {
             T obj = (T)newInstance(clz);
             PropertyDescriptor[] props = ReflectionHelpers.getRWPropertyDescriptors(clz);
             for (PropertyDescriptor pd : props)
             {
                 String propName = pd.getName();
-                Object value = row.get(propName);
+                Object value = row.getObject(propName);
                 if(value!=null)
                 {
                     ReflectionHelpers.setPropertyValue(obj,propName,value);

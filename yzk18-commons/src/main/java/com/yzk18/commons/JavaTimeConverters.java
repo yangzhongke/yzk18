@@ -15,8 +15,6 @@ import java.util.TimeZone;
 //from:https://www.geek-share.com/detail/2627409564.html
 public class JavaTimeConverters {
 
-
-
     public static void registerAll(String[] datePatterns) {
         final DateConverter dateConverter = new DateConverter();
         dateConverter.setPatterns(datePatterns);
@@ -40,7 +38,11 @@ public class JavaTimeConverters {
 
         @Override
         protected <T> T convertToType(Class<T> type, Object value) throws Throwable {
-            if(value instanceof  CharSequence)
+            if(value==null)
+            {
+                return null;
+            }
+            else if(value instanceof  CharSequence)
             {
                 String valueAsString = value.toString();
                 if (valueAsString.length() > MAX_LOCAL_DATE_LENGTH) {
@@ -57,6 +59,16 @@ public class JavaTimeConverters {
             {
                 Date date = (Date) value;
                 LocalDate localDT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                return type.cast(localDT);
+            }
+            else if(value instanceof  LocalDateTime)
+            {
+                LocalDateTime localDT = (LocalDateTime)value;
+                return type.cast(localDT.toLocalDate());
+            }
+            else if(value instanceof  LocalDate)
+            {
+                LocalDate localDT = (LocalDate)value;
                 return type.cast(localDT);
             }
             else
@@ -83,7 +95,11 @@ public class JavaTimeConverters {
 
         @Override
         protected <T> T convertToType(Class<T> type, Object value) throws Throwable {
-            if(value instanceof  CharSequence)
+            if(value==null)
+            {
+                return null;
+            }
+            else if(value instanceof  CharSequence)
             {
                 String paramValueString = value.toString();
                 try {
@@ -103,6 +119,17 @@ public class JavaTimeConverters {
             {
                 Date date = (Date) value;
                 LocalDateTime localDT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                return type.cast(localDT);
+            }
+            else if(value instanceof  LocalDateTime)
+            {
+                LocalDateTime localDT = (LocalDateTime)value;
+                return type.cast(localDT);
+            }
+            else if(value instanceof  LocalDate)
+            {
+                LocalDate localDate = (LocalDate)value;
+                LocalDateTime localDT = LocalDateTime.of(localDate,LocalTime.MIN);
                 return type.cast(localDT);
             }
             else
@@ -130,10 +157,15 @@ public class JavaTimeConverters {
 
         @Override
         protected <T> T convertToType(Class<T> type, Object value) throws Throwable {
-            if (!(value instanceof String)) {
-                throw conversionException(type, value);
+            if(value==null)
+            {
+                return null;
             }
-            return type.cast(OffsetDateTime.parse((CharSequence) value,dtf));
+            else
+            {
+                String str = value.toString();
+                return type.cast(OffsetDateTime.parse(str,dtf));
+            }
         }
 
         @Override

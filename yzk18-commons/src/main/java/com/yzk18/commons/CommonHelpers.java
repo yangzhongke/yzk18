@@ -131,6 +131,14 @@ public class CommonHelpers {
 
     public static <T> T convert(Object value,Class<T> targetClass)
     {
+        if(value==null)
+        {
+            return null;
+        }
+        if(value!=null&&value.getClass()==targetClass)
+        {
+            return (T)value;
+        }
         return (T)ConvertUtils.convert(value,targetClass);
     }
 
