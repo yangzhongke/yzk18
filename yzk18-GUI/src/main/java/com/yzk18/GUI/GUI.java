@@ -713,11 +713,14 @@ public class GUI {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         setFileFilter(fileChooser,extensions);
+        LocalConfigUtils.loadLastCurrentDir(fileChooser,"fileOpenBox");
         int ret = fileChooser.showOpenDialog(null);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
         }
+        String fileName = fileChooser.getSelectedFile().toString();
+        LocalConfigUtils.saveLastCurrentDir(fileChooser,"fileOpenBox");
         return fileChooser.getSelectedFile().toString();
     }
 
@@ -726,12 +729,14 @@ public class GUI {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setMultiSelectionEnabled(true);
+        LocalConfigUtils.loadLastCurrentDir(fileChooser,"filesOpenBox");
         setFileFilter(fileChooser,extensions);
         int ret = fileChooser.showOpenDialog(null);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
         }
+        LocalConfigUtils.saveLastCurrentDir(fileChooser,"filesOpenBox");
         return Arrays.stream(fileChooser.getSelectedFiles()).map(f->f.toString()).toArray(String[]::new);
     }
 
@@ -768,11 +773,13 @@ public class GUI {
         JFileChooser fileChooser = createSaveJFileChooser();
         fileChooser.setDialogTitle(title);
         setFileFilter(fileChooser,extensions);
+        LocalConfigUtils.loadLastCurrentDir(fileChooser,"fileSaveBox");
         int ret = fileChooser.showSaveDialog(null);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
         }
+        LocalConfigUtils.saveLastCurrentDir(fileChooser,"fileSaveBox");
         return fileChooser.getSelectedFile().toString();
     }
 
@@ -781,12 +788,17 @@ public class GUI {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        LocalConfigUtils.loadLastCurrentDir(fileChooser,"dirOpenBox");
+
         int ret = fileChooser.showOpenDialog(null);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
         }
-        return fileChooser.getSelectedFile().toString();
+        LocalConfigUtils.saveLastCurrentDir(fileChooser,"dirOpenBox");
+        String dirName = fileChooser.getSelectedFile().toString();
+        return dirName;
     }
 
     public static String dirSaveBox(String title)
@@ -794,12 +806,16 @@ public class GUI {
         JFileChooser fileChooser = createSaveJFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        LocalConfigUtils.loadLastCurrentDir(fileChooser,"dirSaveBox");
+
         int ret = fileChooser.showSaveDialog(null);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
         }
-        return fileChooser.getSelectedFile().toString();
+        String dirName = fileChooser.getSelectedFile().toString();
+        LocalConfigUtils.saveLastCurrentDir(fileChooser,"dirSaveBox");
+        return dirName;
     }
 
     private static ProgressDialog progressDialog;

@@ -136,11 +136,11 @@ public class ExcelHelpers {
             case BLANK:
             case ERROR:
             case _NONE:
-            case FORMULA:
                 return null;
             case BOOLEAN:
                 boolean b = cell.getBooleanCellValue();
                 return b?1:0;
+            case FORMULA:
             case NUMERIC:
                 double d = cell.getNumericCellValue();
                 return (int)d;
@@ -170,11 +170,11 @@ public class ExcelHelpers {
             case BLANK:
             case ERROR:
             case _NONE:
-            case FORMULA:
                 return null;
             case BOOLEAN:
                 boolean b = cell.getBooleanCellValue();
                 return b?1.0:0.0;
+            case FORMULA:
             case NUMERIC:
                 double d = cell.getNumericCellValue();
                 return d;
@@ -204,7 +204,6 @@ public class ExcelHelpers {
             case BLANK:
             case ERROR:
             case _NONE:
-            case FORMULA:
                 return null;
             case BOOLEAN:
                 boolean b = cell.getBooleanCellValue();
@@ -212,6 +211,7 @@ public class ExcelHelpers {
             case NUMERIC:
                 double d = cell.getNumericCellValue();
                 return Double.toString(d);
+            case FORMULA:
             case STRING:
                 String s = cell.getStringCellValue();
                 return s;
@@ -238,9 +238,9 @@ public class ExcelHelpers {
             case BLANK:
             case ERROR:
             case _NONE:
-            case FORMULA:
             case BOOLEAN:
                 return null;
+            case FORMULA:
             case NUMERIC:
                 LocalDateTime d = cell.getLocalDateTimeCellValue();
                 return d.toLocalDate();
@@ -270,9 +270,9 @@ public class ExcelHelpers {
             case BLANK:
             case ERROR:
             case _NONE:
-            case FORMULA:
             case BOOLEAN:
                 return null;
+            case FORMULA:
             case NUMERIC:
                 LocalDateTime d = cell.getLocalDateTimeCellValue();
                 return d;
@@ -300,6 +300,12 @@ public class ExcelHelpers {
         return chart;
     }
 
+    //https://blog.csdn.net/hantiannan/article/details/6733955
+    public static void evaluateAllFormulas(Workbook wb)
+    {
+        wb.getCreationHelper().createFormulaEvaluator().evaluateAll();
+    }
+
     public static void saveToFile(Workbook workbook,String filename)
     {
         String ext = IOHelpers.getExtension(filename);
@@ -317,6 +323,8 @@ public class ExcelHelpers {
                 throw new IllegalArgumentException("extension of filename should be xls");
             }
         }
+        //https://blog.csdn.net/hantiannan/article/details/6733955
+        workbook.setForceFormulaRecalculation(true);
         IOHelpers.mkParentDirs(filename);
         try(FileOutputStream fos = new FileOutputStream(filename))
         {
@@ -328,9 +336,13 @@ public class ExcelHelpers {
 
     public static Workbook openFile(String filename)
     {
-        try {
-            return WorkbookFactory.create(new File(filename));
-        } catch (IOException e) {
+        try
+        {
+            Workbook wb = WorkbookFactory.create(new File(filename));
+            evaluateAllFormulas(wb);
+            return wb;
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -8,8 +8,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -38,11 +36,13 @@ public class FilePicker extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
+                LocalConfigUtils.loadLastCurrentDir(fileChooser,"FilePicker");
                 int ret = fileChooser.showOpenDialog(FilePicker.this);
                 if(ret!=JFileChooser.APPROVE_OPTION)
                 {
                     return;
                 }
+                LocalConfigUtils.saveLastCurrentDir(fileChooser,"FilePicker");
                 File file = fileChooser.getSelectedFile();
                 txtField.setText(file.toString());
             }
