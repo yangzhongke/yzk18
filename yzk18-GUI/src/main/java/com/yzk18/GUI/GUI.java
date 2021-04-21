@@ -2,13 +2,15 @@ package com.yzk18.GUI;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
+
+import com.github.lgooddatepicker.components.*;
 import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.ReflectionHelpers;
 
@@ -325,6 +327,96 @@ public class GUI {
                 |NoSuchMethodException|InstantiationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static LocalDate dateBox(Object message)
+    {
+        return dateBox(message,null);
+    }
+
+    public static LocalDate dateBox(Object message, LocalDate initialValue)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel(CommonHelpers.toString(message));
+        panel.add(label);
+
+        DatePicker datePicker = new DatePicker();
+        if(initialValue!=null)
+        {
+            datePicker.setDate(initialValue);
+        }
+        panel.add(datePicker);
+
+        int result = JOptionPane.showOptionDialog(null, panel, null,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
+        if(result!=JOptionPane.OK_OPTION)
+        {
+            return null;
+        }
+        return datePicker.getDate();
+    }
+
+    public static LocalDateTime datetimeBox(Object message)
+    {
+        return datetimeBox(message,null);
+    }
+
+    public static LocalDateTime datetimeBox(Object message, LocalDateTime initialValue)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel(CommonHelpers.toString(message));
+        panel.add(label);
+
+        DateTimePicker picker = new DateTimePicker();
+        if(initialValue!=null)
+        {
+            picker.setDateTimeStrict(initialValue);
+        }
+        panel.add(picker);
+
+        int result = JOptionPane.showOptionDialog(null, panel, null,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
+        if(result!=JOptionPane.OK_OPTION)
+        {
+            return null;
+        }
+        return picker.getDateTimeStrict();
+    }
+
+    public static LocalTime timeBox(Object message)
+    {
+        return timeBox(message,null);
+    }
+
+    public static LocalTime timeBox(Object message, LocalTime initialValue)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel(CommonHelpers.toString(message));
+        panel.add(label);
+
+        TimePicker picker = new TimePicker();
+        if(initialValue!=null)
+        {
+            picker.setTime(initialValue);
+        }
+        panel.add(picker);
+
+        int result = JOptionPane.showOptionDialog(null, panel, null,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
+        if(result!=JOptionPane.OK_OPTION)
+        {
+            return null;
+        }
+        return picker.getTime();
     }
 
     public static String passwordBox(Object message)
