@@ -1,7 +1,12 @@
 package 批量邮件发工资条;
 
+import com.yzk18.GUI.GUI;
 import com.yzk18.commons.IOHelpers;
 import com.yzk18.docs.ExcelHelpers;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+
+import java.util.LinkedHashMap;
 
 import static com.yzk18.GUI.GUI.*;
 import static com.yzk18.docs.ExcelHelpers.*;
@@ -12,12 +17,12 @@ public class Main {
         var wb工资表 = openFile(原始表路径);
         var sheet = wb工资表.getSheetAt(0);
         if(!"姓名".equals(getCellStringValue(sheet,0,0))||
-                !"合计".equals(getCellStringValue(sheet,0,8)))
+                !"实发工资".equals(getCellStringValue(sheet,0,8)))
         {
             errorBox("文件格式不对");
             return;
         }
-        for(int i = 1;i<sheet.getLastRowNum()-1;i++)
+        for(int i = 1;i<=sheet.getLastRowNum()-2;i++)
         {
             String 姓名 = getCellStringValue(sheet,i,0);
             double 基本工资 = getCellDoubleValue(sheet,i,2);
@@ -83,8 +88,39 @@ public class Main {
                 +"-完成扣税计算.xlsx";
         ExcelHelpers.saveToFile(wb工资表,newFileName);
 
-        var wb = ExcelHelpers.openFile(newFileName);
-        double d= getCellDoubleValue(wb.getSheetAt(0),1,8);
+        var wbNew = ExcelHelpers.openFile(newFileName);
+        var sheet工资表 = wbNew.getSheetAt(0);
+        double d= getCellDoubleValue(sheet工资表,1,8);
         System.out.println(d);
+
+
+        var map员工的邮箱 = load员工信息表(GUI.fileOpenBox("请选择员工信息表","xlsx"));
+        for(int i=1;i<=sheet工资表.getLastRowNum()-2;i++)
+        {
+            String name = getCellStringValue(sheet工资表,i,0);
+            String deptName = getCellStringValue(sheet工资表,i,1);
+            double 实发工资 =getCellDoubleValue(sheet工资表,i,8);
+            String email = map员工的邮箱.get(deptName+"-"+name);
+            System.out.println(email+","+实发工资);
+        }
+    }
+
+    static LinkedHashMap<String,String> load员工信息表(String fileName)
+    {
+        var wb员工信息表 = openFile(fileName);
+        var map员工的邮箱 = new LinkedHashMap<String,String>();
+        for(int i=0;i<wb员工信息表.getNumberOfSheets();i++)
+        {
+            var sheet部门 = wb员工信息表.getSheetAt(i);
+            String 部门名称 =sheet部门.getSheetName();
+            for(int rowNum=1;rowNum<=sheet部门.getLastRowNum();rowNum++)
+            {
+                Row row = sheet部门.getRow(rowNum);
+                String name = row.getCell(0).getStringCellValue();
+                String email = row.getCell(3).getStringCellValue();
+                map员工的邮箱.put(部门名称+"-"+name,email);
+            }
+        }
+        return map员工的邮箱;
     }
 }
