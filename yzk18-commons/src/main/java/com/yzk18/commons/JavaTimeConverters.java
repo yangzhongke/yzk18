@@ -22,6 +22,7 @@ public class JavaTimeConverters {
         ConvertUtils.register(dateConverter, Date.class);
         ConvertUtils.register(new LocalDateTimeConverter(datePatterns), LocalDateTime.class);
         ConvertUtils.register(new LocalDateConverter(datePatterns), LocalDate.class);
+        ConvertUtils.register(new LocalTimeConverter(datePatterns), LocalTime.class);
         ConvertUtils.register(new OffsetDateTimeConverter(datePatterns), OffsetDateTime.class);
     }
 
@@ -142,6 +143,61 @@ public class JavaTimeConverters {
         @Override
         protected Class<?> getDefaultType() {
             return LocalDateTime.class;
+        }
+    }
+
+    private static class LocalTimeConverter extends AbstractConverter {
+
+        private  DateTimeFormatter dtf;
+        public LocalTimeConverter(String[] datePatterns)
+        {
+            String[] strs = Arrays.stream(datePatterns).map(p->"["+p+"]").toArray(String[]::new);
+            String pattern = String.join("",strs);
+            this.dtf = DateTimeFormatter.ofPattern(pattern);
+        }
+
+        @Override
+        protected <T> T convertToType(Class<T> type, Object value) throws Throwable {
+            if(value==null)
+            {
+                return null;
+            }
+            else if(value instanceof  CharSequence)
+            {
+                String paramValueString = value.toString();
+                return type.cast(LocalTime.parse(paramValueString,dtf));
+            }
+            else if(value instanceof  java.sql.Date)//java.sql.Date should locate before java.util.Date
+            {
+                java.sql.Date sqlDate = (java.sql.Date)value;
+                Timestamp timestamp = new Timestamp(sqlDate.getTime());
+                return type.cast(timestamp.toLocalDateTime().toLocalTime());
+            }
+            else if(value instanceof  Date)
+            {
+                Date date = (Date) value;
+                LocalDateTime localDT = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                return type.cast(localDT.toLocalTime());
+            }
+            else if(value instanceof  LocalDateTime)
+            {
+                LocalDateTime localDT = (LocalDateTime)value;
+                return type.cast(localDT.toLocalTime());
+            }
+            else if(value instanceof  LocalTime)
+            {
+                LocalTime localTime = (LocalTime)value;
+                return type.cast(localTime);
+            }
+            else
+            {
+                throw conversionException(type, value);
+            }
+        }
+
+        @Override
+        protected Class<?> getDefaultType() {
+            return LocalTime.class;
         }
     }
 

@@ -1,10 +1,12 @@
 package com.yzk18.commons;
 
 import com.fatboyindustrial.gsonjavatime.Converters;
+import com.fatboyindustrial.gsonjavatime.LocalDateConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.beanutils.ConvertUtils;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,14 +19,16 @@ import java.util.Scanner;
 public class CommonHelpers {
     static
     {
-        final String[] datePatterns = new String[] { "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd",
-                "HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSS" };
+        final String[] datePatterns = new String[] { "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss","yyyy-MM-dd HH:mm", "yyyy-MM-dd",
+                "HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSS" ,"HH:mm"};
         JavaTimeConverters.registerAll(datePatterns);
     }
 
     public static Gson createGson()
     {
-        Gson gson = Converters.registerAll(new GsonBuilder()).create();
+        GsonBuilder gsonBuilder = Converters.registerAll(new GsonBuilder());
+        gsonBuilder.registerTypeAdapter(File.class, new FileJsonConverter());
+        Gson gson = gsonBuilder.create();
         return gson;
     }
 
@@ -63,6 +67,11 @@ public class CommonHelpers {
         {
             LocalDate date = (LocalDate)obj;
             return date.toString();
+        }
+        else if(obj instanceof File)
+        {
+            File file = (File)obj;
+            return file.toString();
         }
         else
         {
@@ -152,6 +161,11 @@ public class CommonHelpers {
         return (Integer)ConvertUtils.convert(obj,Integer.class);
     }
 
+    public static Boolean toBoolean(Object obj)
+    {
+        return (Boolean)ConvertUtils.convert(obj,Boolean.class);
+    }
+
     public static LocalDate toLocalDate(Date date)
     {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -164,6 +178,22 @@ public class CommonHelpers {
 
     public static LocalDate toLocalDate(Object obj)
     {
+        if(obj==null)
+        {
+            return null;
+        }
+        else if(obj instanceof CharSequence)
+        {
+            String s = obj.toString();
+            if(s.trim().length()<=0)
+            {
+                return null;
+            }
+            else
+            {
+                return (LocalDate)ConvertUtils.convert(s,LocalDate.class);
+            }
+        }
         Object value=ConvertUtils.convert(obj,LocalDate.class);
         if(value instanceof  LocalDate)
         {
@@ -180,8 +210,58 @@ public class CommonHelpers {
         }
     }
 
+    public static LocalTime toLocalTime(Object obj)
+    {
+        if(obj==null)
+        {
+            return null;
+        }
+        else if(obj instanceof CharSequence)
+        {
+            String s = obj.toString();
+            if(s.trim().length()<=0)
+            {
+                return null;
+            }
+            else
+            {
+                return (LocalTime)ConvertUtils.convert(s,LocalTime.class);
+            }
+        }
+        Object value=ConvertUtils.convert(obj,LocalTime.class);
+        if(value instanceof  LocalTime)
+        {
+            return (LocalTime)value;
+        }
+        else if(value instanceof Date)
+        {
+            Date dtValue = (Date)value;
+            return dtValue.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        }
+        else
+        {
+            throw new IllegalArgumentException("unsupported type:"+value.getClass());
+        }
+    }
+
     public static LocalDateTime toLocalDateTime(Object obj)
     {
+        if(obj==null)
+        {
+            return null;
+        }
+        else if(obj instanceof CharSequence)
+        {
+            String s = obj.toString();
+            if(s.trim().length()<=0)
+            {
+                return null;
+            }
+            else
+            {
+                return (LocalDateTime)ConvertUtils.convert(s,LocalDateTime.class);
+            }
+        }
         Object value=ConvertUtils.convert(obj,LocalDateTime.class);
         if(value instanceof  LocalDateTime)
         {

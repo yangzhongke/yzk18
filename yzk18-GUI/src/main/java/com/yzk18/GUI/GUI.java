@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import com.github.lgooddatepicker.components.*;
+import com.github.lgooddatepicker.zinternaltools.JIntegerTextField;
 import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.ReflectionHelpers;
 
@@ -124,21 +125,133 @@ public class GUI {
         return choiceBox(message,"",selectionItems);
     }
 
-    public static String[] multiInputBox(Object message,Collection<String> labels,Collection<Object> initialValues)
+    public static String[] multiInputBox(Object message,Collection<String> labels,
+                                         Collection<Object> initialValues,Collection<Class> types)
     {
         String[] initValuesArray = null;
         if(initialValues!=null)
         {
             initValuesArray = initialValues.toArray(new String[initialValues.size()]);
         }
-        return multiInputBox(message,labels.toArray(new String[labels.size()]),initValuesArray);
+        Class[] typesArray = null;
+        if(types!=null)
+        {
+            typesArray = types.toArray(new Class[types.size()]);
+        }
+        return multiInputBox(message,labels.toArray(new String[labels.size()]),
+                initValuesArray,typesArray);
     }
 
     public static String[] multiInputBox(Object message,String... labels)
     {
-        return multiInputBox(message,labels,null);
+        return multiInputBox(message,labels,null,null);
     }
-    public static String[] multiInputBox(Object message,String[] labels,Object[] initialValues)
+
+    private static JComponent createEditor(Class type,Object initValue)
+    {
+        if(type==Integer.class||type==int.class)
+        {
+            JIntegerTextField txtField = new JIntegerTextField();
+            if(initValue!=null)
+            {
+                txtField.setValue(CommonHelpers.toInt(initValue));
+            }
+            return txtField;
+        }
+        else if(type==Boolean.class||type==boolean.class)
+        {
+            JCheckBox checkBox = new JCheckBox();
+            if(initValue!=null)
+            {
+                checkBox.setSelected(CommonHelpers.toBoolean(initValue));
+            }
+            return checkBox;
+        }
+        else if(type==LocalDate.class)
+        {
+            DatePicker picker = new DatePicker();
+            if(initValue!=null)
+            {
+                picker.setDate(CommonHelpers.toLocalDate(initValue));
+            }
+            return picker;
+        }
+        else if(type==LocalTime.class)
+        {
+            TimePickerSettings timePickerSettings = DateTimePickersUtils.createTimePickerSettings();
+            TimePicker picker = new TimePicker(timePickerSettings);
+            if(initValue!=null)
+            {
+                picker.setTime(CommonHelpers.toLocalTime(initValue));
+            }
+            return picker;
+        }
+        else if(type==LocalDateTime.class)
+        {
+            TimePickerSettings timePickerSettings = DateTimePickersUtils.createTimePickerSettings();
+            DateTimePicker picker = new DateTimePicker(new DatePickerSettings(),timePickerSettings);
+            if(initValue!=null)
+            {
+                picker.setDateTimeStrict(CommonHelpers.toLocalDateTime(initValue));
+            }
+            return picker;
+        }
+        else if(type==File.class)
+        {
+            FilePicker picker = new FilePicker();
+            if(initValue!=null)
+            {
+                String txt = CommonHelpers.toString(initValue);
+                picker.setFile(new File(txt));
+            }
+            return picker;
+        }
+        else
+        {
+            JTextField txtField = new JTextField(CommonHelpers.toString(initValue));
+            return txtField;
+        }
+    }
+
+    private static Object getEditorValue(JComponent componentEditor)
+    {
+        if(componentEditor instanceof JTextField)
+        {
+            JTextField txtField = (JTextField)componentEditor;
+            return txtField.getText();
+        }
+        else if(componentEditor instanceof  DatePicker)
+        {
+            DatePicker picker = (DatePicker)componentEditor;
+            return picker.getDate();
+        }
+        else if(componentEditor instanceof  JCheckBox)
+        {
+            JCheckBox checkBox = (JCheckBox)componentEditor;
+            return checkBox.isSelected();
+        }
+        else if(componentEditor instanceof  TimePicker)
+        {
+            TimePicker picker = (TimePicker)componentEditor;
+            return picker.getTime();
+        }
+        else if(componentEditor instanceof  DateTimePicker)
+        {
+            DateTimePicker picker = (DateTimePicker)componentEditor;
+            return picker.getDateTimeStrict();
+        }
+        else if(componentEditor instanceof  FilePicker)
+        {
+            FilePicker picker = (FilePicker)componentEditor;
+            return picker.getFile();
+        }
+        else
+        {
+            throw new IllegalArgumentException("unknow control type:"+componentEditor.getClass());
+        }
+    }
+
+    public static String[] multiInputBox(Object message,String[] labels,Object[] initialValues,Class[] types)
     {
         if(initialValues!=null&&labels.length<initialValues.length)
         {
@@ -161,26 +274,36 @@ public class GUI {
         gbcLabelMsg.gridwidth=2;
         layout.setConstraints(labelMsg,gbcLabelMsg);
 
-        ArrayList<JTextField> txtFields = new ArrayList<>(fieldsCount);
+        ArrayList<JComponent> editors = new ArrayList<>(fieldsCount);
         for(int i=0;i<fieldsCount;i++)
         {
             String labelText = labels[i];
-            String initValue="";
+            Object initValue="";
             if(initialValues!=null&&i<initialValues.length)
             {
-                initValue = CommonHelpers.toString(initialValues[i]);
+                initValue = initialValues[i];
             }
             JLabel label = new JLabel(labelText);
             rootPanel.add(label);
-            JTextField txtField = new JTextField(initValue);
-            rootPanel.add(txtField);
+
+            JComponent componentEditor;
+            if(types!=null&&i<types.length)
+            {
+                Class type = types[i];
+                componentEditor = createEditor(type,initValue);
+            }
+            else
+            {
+                JTextField txtField = new JTextField(CommonHelpers.toString(initValue));
+                componentEditor = txtField;
+            }
 
             if(i==0)
             {
-                DefaultFocusAncestorListener.setDefaultFocusedComponent(rootPanel,txtField);
+                DefaultFocusAncestorListener.setDefaultFocusedComponent(rootPanel,componentEditor);
             }
-
-            txtFields.add(txtField);
+            rootPanel.add(componentEditor);
+            editors.add(componentEditor);
 
             GridBagConstraints gbcLabel = new GridBagConstraints();
             gbcLabel.gridx=0;
@@ -194,7 +317,7 @@ public class GUI {
             gbcTxt.weightx=1;
             gbcTxt.gridwidth=1;
             gbcTxt.fill = GridBagConstraints.HORIZONTAL;
-            layout.setConstraints(txtField,gbcTxt);
+            layout.setConstraints(componentEditor,gbcTxt);
         }
 
         JScrollPane scrollPane = new JScrollPane(rootPanel);
@@ -210,80 +333,43 @@ public class GUI {
             return null;
         }
 
-        return txtFields.stream().map(tf->tf.getText()).toArray(String[]::new);
+        String[] results = new String[editors.size()];
+        for(int i=0;i<results.length;i++)
+        {
+            JComponent componentEditor = editors.get(i);
+            Object value = getEditorValue(componentEditor);
+            results[i] = CommonHelpers.toString(value);
+        }
+
+        return results;
     }
 
     public static Map<String,String> multiInputBox(Object message,Map<String,Object> data)
     {
-        Dimension halfSize = getDefaultDialogSize();
-
-        JPanel rootPanel = new JPanel();
-        GridBagLayout layout = new GridBagLayout();
-        rootPanel.setLayout(layout);
-
-        JLabel labelMsg = new JLabel(CommonHelpers.toString(message));
-        rootPanel.add(labelMsg);
-
-        GridBagConstraints gbcLabelMsg = new GridBagConstraints();
-        gbcLabelMsg.gridx=0;
-        gbcLabelMsg.gridy=0;
-        gbcLabelMsg.gridwidth=2;
-        layout.setConstraints(labelMsg,gbcLabelMsg);
-
+        String[] labels = new String[data.size()];
+        Object[] initialValues =new Object[data.size()];
+        Class[] types = new Class[data.size()];
         int counter=0;
-        HashMap<String,JTextField> txtFields = new HashMap<String,JTextField>();
         for(Map.Entry<String,Object> entry : data.entrySet())
         {
-            String labelText = entry.getKey();
-            String initValue = CommonHelpers.toString(entry.getValue());
-            JLabel label = new JLabel(labelText);
-            rootPanel.add(label);
-            JTextField txtField = new JTextField(initValue);
-            rootPanel.add(txtField);
-
-            if(counter==0)
-            {
-                DefaultFocusAncestorListener.setDefaultFocusedComponent(rootPanel,txtField);
-            }
-            txtFields.put(labelText,txtField);
-
-            GridBagConstraints gbcLabel = new GridBagConstraints();
-            gbcLabel.gridx=0;
-            gbcLabel.gridy=counter+1;
-            gbcLabel.gridwidth=1;
-            layout.setConstraints(label,gbcLabel);
-
-            GridBagConstraints gbcTxt = new GridBagConstraints();
-            gbcTxt.gridx=1;
-            gbcTxt.gridy=counter+1;
-            gbcTxt.weightx=1;
-            gbcTxt.gridwidth=1;
-            gbcTxt.fill = GridBagConstraints.HORIZONTAL;
-            layout.setConstraints(txtField,gbcTxt);
+            String name = entry.getKey();
+            Object value = entry.getValue();
+            labels[counter] = name;
+            initialValues[counter] = value;
+            types[counter] = (value==null?String.class:value.getClass());
             counter++;
         }
-
-        JScrollPane scrollPane = new JScrollPane(rootPanel);
-        scrollPane.setBorder(null);
-        scrollPane.setPreferredSize(halfSize);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-        int result = JOptionPane.showConfirmDialog(null, scrollPane,
-                null, JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
-        if(result!=JOptionPane.OK_OPTION)
+        String[] returnedValues = multiInputBox(message,labels,initialValues,types);
+        if(returnedValues==null)
         {
             return null;
         }
-        Map<String,String> results = new HashMap<String,String>();
-        for(Map.Entry<String,Object> entry : data.entrySet())
+        Map<String,String> returnedMap = new LinkedHashMap<>();
+        for(int i=0;i<labels.length;i++)
         {
-            String labelText = entry.getKey();
-            JTextField txtField = txtFields.get(labelText);
-            results.put(labelText,txtField.getText());
+            returnedMap.put(labels[i],returnedValues[i]);
         }
-
-        return results;
+        return returnedMap;
     }
 
 
@@ -300,27 +386,32 @@ public class GUI {
         Class objType = data.getClass();
         try {
             PropertyDescriptor[] props = ReflectionHelpers.getRWPropertyDescriptors(objType);
-            Map<String,Object> inputValues = new LinkedHashMap<>();
-            for(PropertyDescriptor prop : props)
+            String[] labels = new String[props.length];
+            Object[] initValues = new Object[props.length];
+            Class[] types = new Class[props.length];
+            for(int i=0;i<props.length;i++)
             {
+                PropertyDescriptor prop = props[i];
                 String propName = prop.getName();
                 Object propValue = ReflectionHelpers.getPropertyValue(data,prop);
-                inputValues.put(propName,propValue);
+                Class dataType = prop.getPropertyType();
+                labels[i] = propName;
+                initValues[i] = propValue;
+                types[i] = dataType;
             }
-            Map<String,String> results = multiInputBox(message,inputValues);
+            String[] results = multiInputBox(message,labels,initValues,types);
             if(results==null)
             {
                 return null;
             }
             Object resultObj = objType.getConstructor().newInstance();
-            for(Map.Entry<String,String> entry : results.entrySet())
+            for(int i=0;i<props.length;i++)
             {
-                String name = entry.getKey();
-                String value = entry.getValue();
-                PropertyDescriptor propDesc = ReflectionHelpers.getPropertyDescriptor(data,name);
-                Class propType = propDesc.getPropertyType();
-                Object convertedValue = CommonHelpers.convert(value,propType);
-                ReflectionHelpers.setPropertyValue(resultObj,propDesc,convertedValue);
+                PropertyDescriptor prop = props[i];
+                String propValue = results[i];
+                Class dataType = prop.getPropertyType();
+                Object convertedValue = CommonHelpers.convert(propValue,dataType);
+                ReflectionHelpers.setPropertyValue(resultObj,prop,convertedValue);
             }
             return (T)resultObj;
         } catch (IllegalAccessException|IllegalArgumentException|InvocationTargetException
@@ -372,7 +463,8 @@ public class GUI {
         JLabel label = new JLabel(CommonHelpers.toString(message));
         panel.add(label);
 
-        DateTimePicker picker = new DateTimePicker();
+        TimePickerSettings timePickerSettings = DateTimePickersUtils.createTimePickerSettings();
+        DateTimePicker picker = new DateTimePicker(new DatePickerSettings(),timePickerSettings);
         if(initialValue!=null)
         {
             picker.setDateTimeStrict(initialValue);
@@ -402,7 +494,8 @@ public class GUI {
         JLabel label = new JLabel(CommonHelpers.toString(message));
         panel.add(label);
 
-        TimePicker picker = new TimePicker();
+        TimePickerSettings timePickerSettings = DateTimePickersUtils.createTimePickerSettings();
+        TimePicker picker = new TimePicker(timePickerSettings);
         if(initialValue!=null)
         {
             picker.setTime(initialValue);
