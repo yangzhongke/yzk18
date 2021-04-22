@@ -79,6 +79,70 @@ public class IOHelpers {
         }
     }
 
+    public static  String readAllText(InputStream inputStream)
+    {
+        InputStream newInStream;
+        if(inputStream.markSupported())
+        {
+            newInStream = inputStream;
+        }
+        else
+        {
+            newInStream = toByteArrayInputStream(inputStream);
+        }
+        newInStream.mark(Integer.MAX_VALUE);
+        String charsetName = detectTextEncoding(newInStream);
+        if(charsetName==null)
+        {
+            charsetName = "UTF-8";
+        }
+        try
+        {
+            newInStream.reset();
+            String text = IOUtils.toString(newInStream,charsetName);
+            if(newInStream!=inputStream)
+            {
+                newInStream.close();
+            }
+            return text;
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static  String[] readAllLines(InputStream inputStream)
+    {
+        InputStream newInStream;
+        if(inputStream.markSupported())
+        {
+            newInStream = inputStream;
+        }
+        else
+        {
+            newInStream = toByteArrayInputStream(inputStream);
+        }
+        newInStream.mark(Integer.MAX_VALUE);
+        String charsetName = detectTextEncoding(newInStream);
+        if(charsetName==null)
+        {
+            charsetName = "UTF-8";
+        }
+        try
+        {
+            newInStream.reset();
+            String[] lines = IOUtils.readLines(newInStream, charsetName).toArray(new String[0]);
+            if(newInStream!=inputStream)
+            {
+                newInStream.close();
+            }
+            return lines;
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static String[] readAllLines(File file)
     {
         return readAllLines(file.toString());

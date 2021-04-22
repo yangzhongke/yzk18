@@ -3,6 +3,8 @@ package com.yzk18.docs;
 import com.yzk18.commons.CommonHelpers;
 import org.apache.poi.xwpf.usermodel.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -13,18 +15,42 @@ import java.util.stream.Stream;
  * adapted from: https://blog.csdn.net/qq_38148461/article/details/93658114
  */
 public class WordTemplateRenderer {
-    public static void render(String templateFilename,Map<String,Object> data,String outFile)
+    public static void render(String templateFilename, Map<String,Object> data, String outFile)
     {
         try(XWPFDocument doc = WordHelpers.openDocx(templateFilename))
         {
-            WordTemplateRenderer.render(doc,data);
+            WordTemplateRenderer.inPlaceRender(doc,data);
             WordHelpers.saveToFile(doc,outFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void render(XWPFDocument document, Map<String, Object> map)
+    public static XWPFDocument render(XWPFDocument document, Map<String, Object> map)
+    {
+        XWPFDocument clonedDoc = clone(document);
+        inPlaceRender(clonedDoc,map);
+        return clonedDoc;
+    }
+
+    public static XWPFDocument clone(XWPFDocument document)
+    {
+        try(ByteArrayOutputStream baos = new ByteArrayOutputStream();)
+        {
+            document.write(baos);
+            byte[] bytes = baos.toByteArray();
+            try(ByteArrayInputStream bais = new ByteArrayInputStream(bytes))
+            {
+                return new XWPFDocument(bais);
+            }
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void inPlaceRender(XWPFDocument document, Map<String, Object> map)
     {
         //1. process tables
         Iterator<XWPFTable> itTable = document.getTablesIterator();

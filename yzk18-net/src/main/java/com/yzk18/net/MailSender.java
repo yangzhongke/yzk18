@@ -76,6 +76,16 @@ public class MailSender {
         }
     }
 
+    public MailSender setFrom(String from,String personal) {
+        try
+        {
+            return setFrom(new InternetAddress(from,personal));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     public MailSender setHtmlMessage(String message)
     {
         this.setMessage(message,"text/html;charset=utf-8");

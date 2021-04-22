@@ -71,6 +71,16 @@ public class WordHelpers {
         }
     }
 
+    public static XWPFDocument openDocx(byte[] bytes)
+    {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes))
+        {
+            return new XWPFDocument(bais);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static XWPFDocument openDocx(String file)
     {
         try(FileInputStream fos = new FileInputStream((file)))
@@ -189,6 +199,17 @@ public class WordHelpers {
         try {
             return doc.createChart(Units.toEMU(width),Units.toEMU(height));
         } catch (InvalidFormatException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] toByteArray(XWPFDocument doc)
+    {
+        try(ByteArrayOutputStream os = new ByteArrayOutputStream())
+        {
+            doc.write(os);
+            return os.toByteArray();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
