@@ -15,9 +15,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PDFHelpers {
-    public static PDDocument openFile(String pdfFile)
+
+    public static PDDocument openFile(File pdfFile)
     {
         try(InputStream inputStream = new FileInputStream(pdfFile))
+        {
+            PDDocument pdfDocument = PDDocument.load(inputStream);
+            return pdfDocument;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static PDDocument openFile(String pdfFile)
+    {
+        return openFile(new File(pdfFile));
+    }
+
+    public static PDDocument openFile(InputStream inputStream)
+    {
+        try
         {
             PDDocument pdfDocument = PDDocument.load(inputStream);
             return pdfDocument;

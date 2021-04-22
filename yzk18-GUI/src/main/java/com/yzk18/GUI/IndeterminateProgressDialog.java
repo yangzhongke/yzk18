@@ -7,8 +7,25 @@ import java.awt.*;
 
 public class IndeterminateProgressDialog extends JDialog {
     private JLabel label;
+    public IndeterminateProgressDialog(Frame owner)
+    {
+        super(owner);
+        initComponents();
+    }
+
+    public IndeterminateProgressDialog(Dialog owner)
+    {
+        super(owner);
+        initComponents();
+    }
+
     public IndeterminateProgressDialog()
     {
+        super();
+        initComponents();
+    }
+
+    private void initComponents() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         this.label = new JLabel("");

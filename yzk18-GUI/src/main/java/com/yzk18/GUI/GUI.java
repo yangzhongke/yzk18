@@ -34,32 +34,88 @@ public class GUI {
             UIManager.put("JFileChoose.saveExistConfirmText","This item exists, overwrite?");
         }
     }
+
+    //the owner of other dialog, which can help to show an item in the taskbar
+    private static volatile DummyFrame dummyFrame = null;
+    private static volatile Thread mainThread;
+
+    private static void showDummyFrameIfNeeded()
+    {
+        if(dummyFrame!=null)
+        {
+            return;
+        }
+        dummyFrame = new DummyFrame();
+
+        mainThread = Thread.currentThread();
+        mainThread.setUncaughtExceptionHandler((t,e)->{
+            //closeDummyFrame() when unhandled exception is thrown in main thread
+            e.printStackTrace();
+            GUI.closeDummyFrame();
+        });
+        Thread t = new Thread(()->{
+            while(mainThread.isAlive())
+            {
+                try
+                {
+                    Thread.sleep(100);
+                } catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            //closeDummyFrame() when main() exits
+            GUI.closeDummyFrame();
+        });
+        t.setDaemon(false);
+        t.start();
+    }
+
+    private static void closeDummyFrame()
+    {
+        if(dummyFrame!=null)
+        {
+            dummyFrame.dispose();
+            dummyFrame = null;
+        }
+    }
+
+    public static DummyFrame getDummyFrame()
+    {
+        showDummyFrameIfNeeded();
+        return dummyFrame;
+    }
+
     public static void msgBox(Object message)
     {
-        JOptionPane.showMessageDialog(null,CommonHelpers.toString(message),null,JOptionPane.INFORMATION_MESSAGE);
+        showDummyFrameIfNeeded();
+        JOptionPane.showMessageDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.INFORMATION_MESSAGE);
     }
 
 
     public static void errorBox(Object message)
     {
-        JOptionPane.showMessageDialog(null,CommonHelpers.toString(message),null,JOptionPane.ERROR_MESSAGE);
+        showDummyFrameIfNeeded();
+        JOptionPane.showMessageDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.ERROR_MESSAGE);
     }
 
     public static boolean yesNoBox(Object message)
     {
-        int ret = JOptionPane.showConfirmDialog(null,CommonHelpers.toString(message),null,JOptionPane.YES_NO_OPTION);
+        int ret = JOptionPane.showConfirmDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.YES_NO_OPTION);
         return ret==JOptionPane.YES_OPTION;
     }
 
     public static boolean okCancelBox(Object message)
     {
-        int ret = JOptionPane.showConfirmDialog(null,CommonHelpers.toString(message),null,JOptionPane.OK_CANCEL_OPTION);
+        showDummyFrameIfNeeded();
+        int ret = JOptionPane.showConfirmDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.OK_CANCEL_OPTION);
         return ret==JOptionPane.OK_OPTION;
     }
 
     public static String inputBox(Object message,Object initialValue)
     {
-        Object ret = JOptionPane.showInputDialog(null,CommonHelpers.toString(message),null,JOptionPane.PLAIN_MESSAGE,
+        showDummyFrameIfNeeded();
+        Object ret = JOptionPane.showInputDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.PLAIN_MESSAGE,
                 null,null,initialValue);
         if(ret==null)
         {
@@ -78,6 +134,7 @@ public class GUI {
 
     public static Integer intBox(Object message,Integer initialValue)
     {
+        showDummyFrameIfNeeded();
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -91,7 +148,7 @@ public class GUI {
         DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,intField);
         panel.add(intField);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, null, null);
         if(result!=JOptionPane.OK_OPTION)
@@ -108,6 +165,7 @@ public class GUI {
 
     public static Double doubleBox(Object message,Double initialValue)
     {
+        showDummyFrameIfNeeded();
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -121,8 +179,7 @@ public class GUI {
         DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,doubleField);
         panel.add(doubleField);
 
-
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, null, null);
         if(result!=JOptionPane.OK_OPTION)
@@ -144,7 +201,8 @@ public class GUI {
 
     public static String choiceBox(Object message, String initialValue, String... selectionItems)
     {
-        Object ret = JOptionPane.showInputDialog(null,CommonHelpers.toString(message),null,JOptionPane.PLAIN_MESSAGE,
+        showDummyFrameIfNeeded();
+        Object ret = JOptionPane.showInputDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.PLAIN_MESSAGE,
                 null,selectionItems,initialValue);
         return (String)ret;
     }
@@ -297,6 +355,7 @@ public class GUI {
 
     public static String[] multiInputBox(Object message,String[] labels,Object[] initialValues,Class[] types)
     {
+        showDummyFrameIfNeeded();
         if(initialValues!=null&&labels.length<initialValues.length)
         {
             throw new IllegalArgumentException("labels.length<initialValues.length");
@@ -370,7 +429,7 @@ public class GUI {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        int result = JOptionPane.showConfirmDialog(null, scrollPane,
+        int result = JOptionPane.showConfirmDialog(dummyFrame, scrollPane,
                 null, JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
         if(result!=JOptionPane.OK_OPTION)
         {
@@ -471,6 +530,7 @@ public class GUI {
 
     public static LocalDate dateBox(Object message, LocalDate initialValue)
     {
+        showDummyFrameIfNeeded();
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -484,7 +544,7 @@ public class GUI {
         }
         panel.add(datePicker);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, null, null);
         if(result!=JOptionPane.OK_OPTION)
@@ -501,6 +561,7 @@ public class GUI {
 
     public static LocalDateTime datetimeBox(Object message, LocalDateTime initialValue)
     {
+        showDummyFrameIfNeeded();
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -515,7 +576,7 @@ public class GUI {
         }
         panel.add(picker);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, null, null);
         if(result!=JOptionPane.OK_OPTION)
@@ -532,6 +593,7 @@ public class GUI {
 
     public static LocalTime timeBox(Object message, LocalTime initialValue)
     {
+        showDummyFrameIfNeeded();
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -546,7 +608,7 @@ public class GUI {
         }
         panel.add(picker);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, null, null);
         if(result!=JOptionPane.OK_OPTION)
@@ -558,6 +620,7 @@ public class GUI {
 
     public static String passwordBox(Object message)
     {
+        showDummyFrameIfNeeded();
         JPanel panel = new JPanel();
         JLabel label = new JLabel(CommonHelpers.toString(message));
         JPasswordField pwdField = new JPasswordField(10);
@@ -566,7 +629,7 @@ public class GUI {
 
         DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,pwdField);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, null, null);
         if(result!=JOptionPane.OK_OPTION)
@@ -579,6 +642,7 @@ public class GUI {
 
     public static String[] loginBox(Object message)
     {
+        showDummyFrameIfNeeded();
         JPanel rootPanel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
         rootPanel.setLayout(layout);
@@ -631,7 +695,7 @@ public class GUI {
 
         DefaultFocusAncestorListener.setDefaultFocusedComponent(rootPanel,tfUserName);
 
-        int result = JOptionPane.showConfirmDialog(null, rootPanel,
+        int result = JOptionPane.showConfirmDialog(dummyFrame, rootPanel,
                 null, JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
         if(result!=JOptionPane.OK_OPTION)
         {
@@ -649,7 +713,8 @@ public class GUI {
 
     public  static String buttonsBox(Object message,String... buttons)
     {
-        int result = JOptionPane.showOptionDialog(null, CommonHelpers.toString(message), null,
+        showDummyFrameIfNeeded();
+        int result = JOptionPane.showOptionDialog(dummyFrame, CommonHelpers.toString(message), null,
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, buttons, null);
         if(result<0)
@@ -664,6 +729,8 @@ public class GUI {
 
     public static String imgBox(Object message,String imgPath,String... buttons)
     {
+        showDummyFrameIfNeeded();
+
         Dimension halfSize = getDefaultDialogSize();
 
         ImageIcon imgIcon = new ImageIcon(imgPath);
@@ -683,7 +750,7 @@ public class GUI {
         BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxLayout);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, buttons, null);
         if(result<0)
@@ -707,6 +774,7 @@ public class GUI {
     }
     public static String textBox(Object message,String text,String... buttons)
     {
+        showDummyFrameIfNeeded();
         Dimension halfSize = getDefaultDialogSize();
 
         JPanel panel = new JPanel();
@@ -724,7 +792,7 @@ public class GUI {
 
         DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,txtArea);
 
-        int result = JOptionPane.showOptionDialog(null, panel, null,
+        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
                 JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, buttons, null);
         if(result<0)
@@ -754,11 +822,12 @@ public class GUI {
 
     public static String fileOpenBox(String title,String... extensions)
     {
+        showDummyFrameIfNeeded();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         setFileFilter(fileChooser,extensions);
         LocalConfigUtils.loadLastCurrentDir(fileChooser,"fileOpenBox");
-        int ret = fileChooser.showOpenDialog(null);
+        int ret = fileChooser.showOpenDialog(dummyFrame);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
@@ -770,12 +839,13 @@ public class GUI {
 
     public static String[] filesOpenBox(String title,String... extensions)
     {
+        showDummyFrameIfNeeded();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setMultiSelectionEnabled(true);
         LocalConfigUtils.loadLastCurrentDir(fileChooser,"filesOpenBox");
         setFileFilter(fileChooser,extensions);
-        int ret = fileChooser.showOpenDialog(null);
+        int ret = fileChooser.showOpenDialog(dummyFrame);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
@@ -814,11 +884,12 @@ public class GUI {
 
     public static String fileSaveBox(String title,String... extensions)
     {
+        showDummyFrameIfNeeded();
         JFileChooser fileChooser = createSaveJFileChooser();
         fileChooser.setDialogTitle(title);
         setFileFilter(fileChooser,extensions);
         LocalConfigUtils.loadLastCurrentDir(fileChooser,"fileSaveBox");
-        int ret = fileChooser.showSaveDialog(null);
+        int ret = fileChooser.showSaveDialog(dummyFrame);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
@@ -829,13 +900,13 @@ public class GUI {
 
     public static String dirOpenBox(String title)
     {
+        showDummyFrameIfNeeded();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         LocalConfigUtils.loadLastCurrentDir(fileChooser,"dirOpenBox");
-
-        int ret = fileChooser.showOpenDialog(null);
+        int ret = fileChooser.showOpenDialog(dummyFrame);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
@@ -847,12 +918,13 @@ public class GUI {
 
     public static String dirSaveBox(String title)
     {
+        showDummyFrameIfNeeded();
         JFileChooser fileChooser = createSaveJFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         LocalConfigUtils.loadLastCurrentDir(fileChooser,"dirSaveBox");
 
-        int ret = fileChooser.showSaveDialog(null);
+        int ret = fileChooser.showSaveDialog(dummyFrame);
         if(ret!=JFileChooser.APPROVE_OPTION)
         {
             return null;
@@ -865,10 +937,11 @@ public class GUI {
     private static ProgressDialog progressDialog;
     public static void showProgressDialog(Object message,int maximum,int value)
     {
+        showDummyFrameIfNeeded();
         SwingUtilities.invokeLater(()->{
             if(progressDialog==null)
             {
-                progressDialog = new ProgressDialog();
+                progressDialog = new ProgressDialog(dummyFrame);
                 progressDialog.setModal(false);
                 progressDialog.setLocationRelativeTo(null);//screen center
             }
@@ -889,10 +962,11 @@ public class GUI {
     private static IndeterminateProgressDialog indeterminateProgressDialog;
     public static void showIndeterminateProgressDialog(Object message)
     {
+        showDummyFrameIfNeeded();
         SwingUtilities.invokeLater(()->{
             if(indeterminateProgressDialog==null)
             {
-                indeterminateProgressDialog = new IndeterminateProgressDialog();
+                indeterminateProgressDialog = new IndeterminateProgressDialog(dummyFrame);
                 indeterminateProgressDialog.setModal(false);
                 indeterminateProgressDialog.setLocationRelativeTo(null);//screen center
             }

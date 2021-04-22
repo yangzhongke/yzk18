@@ -288,6 +288,8 @@ public class IOHelpers {
         }
     }
 
+    //getFiles、getdirs、deleteDir等不讲，上课时候直接用File等类
+
     public static InputStream toByteArrayInputStream(InputStream inStream)
     {
         byte[] bytes = readAllBytes(inStream);

@@ -15,9 +15,13 @@ public class Main {
         标准体重正负10﹪~ 20﹪为偏胖或偏瘦
         标准体重正负20﹪以上为严重肥胖或严重瘦弱
          */
+
+
+
         String gender = GUI.buttonsBox("您的性别是？","男性","女性");
         Double height = GUI.doubleBox("请输入身高（厘米）");
         Double weight = GUI.doubleBox("请输入体重");
+
         double 标准体重;
         if(gender.equals("男性"))
         {

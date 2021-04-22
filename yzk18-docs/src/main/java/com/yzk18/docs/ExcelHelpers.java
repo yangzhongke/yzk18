@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -334,17 +335,35 @@ public class ExcelHelpers {
         }
     }
 
-    public static Workbook openFile(String filename)
+    public static Workbook openFile(File file)
     {
         try
         {
-            Workbook wb = WorkbookFactory.create(new File(filename));
+            Workbook wb = WorkbookFactory.create(file);
             evaluateAllFormulas(wb);
             return wb;
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Workbook openFile(InputStream inStream)
+    {
+        try
+        {
+            Workbook wb = WorkbookFactory.create(inStream);
+            evaluateAllFormulas(wb);
+            return wb;
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Workbook openFile(String filename)
+    {
+        return openFile(new File(filename));
     }
 
     public static void close(Workbook wb)

@@ -6,8 +6,24 @@ import java.awt.*;
 public class ProgressDialog extends JDialog {
     private JLabel label;
     private JProgressBar progressBar;
+    public ProgressDialog(Dialog owner)
+    {
+        super(owner);
+        initComponents();
+    }
+
+    public ProgressDialog(Frame owner)
+    {
+        super(owner);
+        initComponents();
+    }
+
     public ProgressDialog()
     {
+        initComponents();
+    }
+
+    private void initComponents() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         this.label = new JLabel("");

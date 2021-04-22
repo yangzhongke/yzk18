@@ -83,7 +83,12 @@ public class WordHelpers {
 
     public static XWPFDocument openDocx(String file)
     {
-        try(FileInputStream fos = new FileInputStream((file)))
+        return openDocx(new File(file));
+    }
+
+    public static XWPFDocument openDocx(File file)
+    {
+        try(FileInputStream fos = new FileInputStream(file))
         {
             return openDocx(fos);
         } catch (IOException e)
