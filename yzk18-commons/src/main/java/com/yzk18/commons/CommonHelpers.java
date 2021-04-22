@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.ConvertUtils;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -48,8 +49,16 @@ public class CommonHelpers {
         {
             return null;
         }
+        else if(obj instanceof Double)
+        {
+            return toString((Double) obj);
+        }
+        else if(obj instanceof Float)
+        {
+            return toString((Float) obj);
+        }
         //avoid double quotes of String by Gson
-        if(obj instanceof  CharSequence)
+        else if(obj instanceof  CharSequence)
         {
             return ((CharSequence)obj).toString();
         }
@@ -77,6 +86,28 @@ public class CommonHelpers {
         {
             return toJsonString(obj);
         }
+    }
+
+    public static String toString(Double d)
+    {
+        DecimalFormat df = new DecimalFormat("#.00");
+        return df.format(d);
+    }
+
+    public static String toString(Float f)
+    {
+        DecimalFormat df = new DecimalFormat("#.00");
+        return df.format(f);
+    }
+
+    public static String repeat(String s,int count)
+    {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<count;i++)
+        {
+            sb.append(s);
+        }
+        return sb.toString();
     }
 
     public static void println(Object obj)

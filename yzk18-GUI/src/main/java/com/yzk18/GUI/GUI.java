@@ -76,31 +76,65 @@ public class GUI {
         return inputBox(message,"");
     }
 
-    public static int intBox(Object message,Integer initialValue)
+    public static Integer intBox(Object message,Integer initialValue)
     {
-        Object ret = JOptionPane.showInputDialog(null,CommonHelpers.toString(message),null,JOptionPane.PLAIN_MESSAGE,
-                null,null,initialValue);
-        if(ret==null)
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel(CommonHelpers.toString(message));
+        panel.add(label);
+        JIntegerTextField intField = new JIntegerTextField();
+        if(initialValue!=null)
         {
-            return 0;
+            intField.setValue(initialValue);
         }
-        else
+        DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,intField);
+        panel.add(intField);
+
+        int result = JOptionPane.showOptionDialog(null, panel, null,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
+        if(result!=JOptionPane.OK_OPTION)
         {
-            try
-            {
-                String s = ret.toString();
-                return Integer.parseInt(s);
-            }
-            catch (NumberFormatException ex)
-            {
-                return 0;
-            }
+            return null;
         }
+        return intField.getValue();
     }
 
     public static int intBox(Object message)
     {
         return intBox(message,null);
+    }
+
+    public static Double doubleBox(Object message,Double initialValue)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel(CommonHelpers.toString(message));
+        panel.add(label);
+        JDoubleTextField doubleField = new JDoubleTextField();
+        if(initialValue!=null)
+        {
+            doubleField.setValue(initialValue);
+        }
+        DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,doubleField);
+        panel.add(doubleField);
+
+
+        int result = JOptionPane.showOptionDialog(null, panel, null,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
+        if(result!=JOptionPane.OK_OPTION)
+        {
+            return null;
+        }
+        return doubleField.getValue();
+    }
+
+    public static Double doubleBox(Object message)
+    {
+        return doubleBox(message,null);
     }
 
     public static String choiceBox(Object message, String initialValue, Collection<String> selectionItems)
@@ -149,9 +183,19 @@ public class GUI {
 
     private static JComponent createEditor(Class type,Object initValue)
     {
-        if(type==Integer.class||type==int.class)
+        if(type==Integer.class||type==int.class||type==Short.class||type==short.class
+                ||type==Byte.class||type==byte.class)
         {
             JIntegerTextField txtField = new JIntegerTextField();
+            if(initValue!=null)
+            {
+                txtField.setValue(CommonHelpers.toInt(initValue));
+            }
+            return txtField;
+        }
+        else if(type==Double.class||type==double.class||type==Float.class||type==float.class)
+        {
+            JDoubleTextField txtField = new JDoubleTextField();
             if(initValue!=null)
             {
                 txtField.setValue(CommonHelpers.toInt(initValue));

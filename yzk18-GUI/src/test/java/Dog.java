@@ -5,7 +5,7 @@ import java.time.LocalTime;
 
 public class Dog
 {
-
+    private long id;
     private int age;
     private String name;
     private File photo;
@@ -14,6 +14,15 @@ public class Dog
     private LocalDate 生日;
     private LocalTime 时辰;
     private LocalDateTime 注册时间;
+
+    public long getId() {
+        return id;
+    }
+
+    public Dog setId(long id) {
+        this.id = id;
+        return this;
+    }
 
     public int getAge() {
         return age;
