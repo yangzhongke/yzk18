@@ -13,11 +13,7 @@ import java.util.Optional;
 
 public class ReflectionHelpers {
 
-    /**
-     * <div lang="zh-cn">获取clz类型的所有可读且可写的属性（排除getClass()方法），支持chain setter方法，比如Person setName(String value)</div>
-     * @param clz
-     * @return
-     */
+    //获取clz类型的所有可读且可写的属性（排除getClass()方法），支持chain setter方法，比如Person setName(String value)
     public static PropertyDescriptor[] getRWPropertyDescriptors(Class clz)
     {
         try {

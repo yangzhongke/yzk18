@@ -1,6 +1,8 @@
 import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.JDBCExecutor;
+import com.yzk18.commons.JDBCRow;
 
+import java.util.List;
 import java.util.Map;
 
 public class TestJDBC1 {
@@ -8,8 +10,8 @@ public class TestJDBC1 {
         JDBCExecutor jdbc = new JDBCExecutor("jdbc:mysql://localhost:3306/test",
                 "root","root");
 
-        var rows = jdbc.queryAsMap("select * from reviews");
-        for(var row : rows)
+        List<JDBCRow> rows = jdbc.queryAsMap("select * from reviews");
+        for(JDBCRow row : rows)
         {
             //System.out.println(row);
             System.out.println(row.getString("name")+"|"+row.getString("review")
@@ -19,7 +21,7 @@ public class TestJDBC1 {
                     +"|"+row.getString("time1")+"|"+row.getString("Birthday"));
         }
 
-        var items = jdbc.query(Review.class,"select * from reviews");
+        List<Review> items = jdbc.query(Review.class,"select * from reviews");
         CommonHelpers.println(items);
     }
 }

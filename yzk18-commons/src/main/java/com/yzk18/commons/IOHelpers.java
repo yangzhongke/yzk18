@@ -199,16 +199,6 @@ public class IOHelpers {
         }
     }
 
-    public static void mkDirs(String dir)
-    {
-        try
-        {
-            FileUtils.forceMkdir(new File(dir));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void mkParentDirs(String file)
     {
         try
@@ -305,6 +295,7 @@ public class IOHelpers {
         }
     }
 
+    /*
     public static void deleteFile(String fileName)
     {
         File file =new File(fileName);
@@ -315,12 +306,7 @@ public class IOHelpers {
         file.delete();
     }
 
-    public static String[] getFiles(String dir,boolean recursive,String... extensions)
-    {
-        String[] files = FileUtils.listFiles(new File(dir),extensions,recursive)
-                .stream().map(f->f.toString()).toArray(String[]::new);
-        return files;
-    }
+
 
     public static String[] getFiles(String dir,boolean recursive)
     {
@@ -346,6 +332,13 @@ public class IOHelpers {
     public static String getParentDir(String file)
     {
         return new File(file).getParent();
+    }*/
+
+    public static String[] getFiles(String dir,boolean recursive,String... extensions)
+    {
+        String[] files = FileUtils.listFiles(new File(dir),extensions,recursive)
+                .stream().map(f->f.toString()).toArray(String[]::new);
+        return files;
     }
 
     public static String getFileNameWithoutExtension(String file)

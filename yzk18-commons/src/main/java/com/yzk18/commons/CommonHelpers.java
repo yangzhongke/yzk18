@@ -1,7 +1,6 @@
 package com.yzk18.commons;
 
 import com.fatboyindustrial.gsonjavatime.Converters;
-import com.fatboyindustrial.gsonjavatime.LocalDateConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.beanutils.ConvertUtils;

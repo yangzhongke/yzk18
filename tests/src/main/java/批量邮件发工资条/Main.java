@@ -8,8 +8,12 @@ import com.yzk18.docs.WordHelpers;
 import com.yzk18.docs.WordTemplateRenderer;
 import com.yzk18.net.MailSender;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFFactory;
 
+import java.io.File;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.*;
@@ -20,8 +24,8 @@ import static com.yzk18.docs.ExcelHelpers.*;
 public class Main {
     public static void main(String[] args) {
         String 原始表路径 = fileOpenBox("选择本月工资表","xlsx");
-        var wb工资表 = openFile(原始表路径);
-        var sheet = wb工资表.getSheetAt(0);
+        Workbook wb工资表 = openFile(原始表路径);
+        Sheet sheet = wb工资表.getSheetAt(0);
         if(!"姓名".equals(getCellStringValue(sheet,0,0))||
                 !"实发工资".equals(getCellStringValue(sheet,0,8)))
         {
@@ -36,20 +40,20 @@ public class Main {
         double d1= getCellDoubleValue(wb工资表.getSheetAt(0),1,8);
         System.out.println(d1);
 
-        String newFileName = IOHelpers.getParentDir(原始表路径)+"/"+IOHelpers.getFileNameWithoutExtension(原始表路径)
+        String newFileName = new File(原始表路径).getParent()+"/"+IOHelpers.getFileNameWithoutExtension(原始表路径)
                 +"-完成扣税计算.xlsx";
         ExcelHelpers.saveToFile(wb工资表,newFileName);
 
-        var wbNew = ExcelHelpers.openFile(newFileName);
-        var sheet工资表 = wbNew.getSheetAt(0);
+        Workbook wbNew = ExcelHelpers.openFile(newFileName);
+        Sheet sheet工资表 = wbNew.getSheetAt(0);
         double d= getCellDoubleValue(sheet工资表,1,8);
         System.out.println(d);
 
 
         String 员工信息表文件名=GUI.fileOpenBox("请选择员工信息表","xlsx");
-        var map员工的邮箱 = load员工信息表(员工信息表文件名);
+        LinkedHashMap<String,String> map员工的邮箱 = load员工信息表(员工信息表文件名);
         String 工资表模板文件名=GUI.fileOpenBox("请选择工资条模板文件","docx");
-        var doc工资表模板 = WordHelpers.openDocx(工资表模板文件名);
+        XWPFDocument doc工资表模板 = WordHelpers.openDocx(工资表模板文件名);
         for(int i=1;i<=sheet工资表.getLastRowNum()-2;i++)
         {
             String name = getCellStringValue(sheet工资表,i,0);
@@ -79,7 +83,7 @@ public class Main {
             params.put("${社保}",社保);
             params.put("${个税}",个税);
             params.put("${实发工资}",实发工资);
-            var 渲染后doc = WordTemplateRenderer.render(doc工资表模板,params);
+            XWPFDocument 渲染后doc = WordTemplateRenderer.render(doc工资表模板,params);
             发送邮件(email,name,渲染后doc);
             CommonHelpers.close(渲染后doc);
         }
@@ -171,11 +175,11 @@ public class Main {
 
     static LinkedHashMap<String,String> load员工信息表(String fileName)
     {
-        var wb员工信息表 = openFile(fileName);
-        var map员工的邮箱 = new LinkedHashMap<String,String>();
+        Workbook wb员工信息表 = openFile(fileName);
+        LinkedHashMap<String,String> map员工的邮箱 = new LinkedHashMap<String,String>();
         for(int i=0;i<wb员工信息表.getNumberOfSheets();i++)
         {
-            var sheet部门 = wb员工信息表.getSheetAt(i);
+            Sheet sheet部门 = wb员工信息表.getSheetAt(i);
             String 部门名称 =sheet部门.getSheetName();
             for(int rowNum=1;rowNum<=sheet部门.getLastRowNum();rowNum++)
             {
