@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <name>yzk18-commons</name>
-    <description>yzk18-commons</description>
+    <description>commons library for other libraries, including IOHelpers, JDBCExecutor, QRCodeHelpers, ImageHelpers, etc.</description>
     <url>https://github.com/yangzhongke/yzk18/</url>
     <groupId>com.yzk18</groupId>
     <artifactId>yzk18-commons</artifactId>
