@@ -11,9 +11,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * <div lang="zh-cn">用户简化反射的工具类。</div>
+ */
 public class ReflectionHelpers {
 
-    //获取clz类型的所有可读且可写的属性（排除getClass()方法），支持chain setter方法，比如Person setName(String value)
+    /**
+     * <div lang="zh-cn">获取clz类型的所有可读且可写的属性（排除getClass()方法），支持chain setter方法，比如Person setName(String value)</div>
+     * @param clz
+     * @return
+     */
     public static PropertyDescriptor[] getRWPropertyDescriptors(Class clz)
     {
         try {
@@ -53,6 +60,7 @@ public class ReflectionHelpers {
             throw new RuntimeException(e);
         }
     }
+
 
     public static PropertyDescriptor getPropertyDescriptor(Object obj, String propName)
     {

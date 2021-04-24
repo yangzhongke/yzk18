@@ -7,7 +7,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * <div lang="zh-cn">桌面操作相关地方法。</div>
+ */
 public class DesktopHelpers {
+
+    /**
+     * <div lang="zh-cn">用默认软件打开文件。</div>
+     * @param filename
+     */
     public static void openFile(String filename)
     {
         try {
@@ -17,6 +25,10 @@ public class DesktopHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">用默认软件编辑文件。</div>
+     * @param filename
+     */
     public static void editFile(String filename)
     {
         try {
@@ -26,6 +38,10 @@ public class DesktopHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn"></div>
+     * @param url
+     */
     public static void openUrl(String url)
     {
         try {
@@ -35,6 +51,10 @@ public class DesktopHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">把value设置到系统剪贴板中。</div>
+     * @param value
+     */
     public static void setClipboardText(String value)
     {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -42,6 +62,10 @@ public class DesktopHelpers {
         clipboard.setContents(trans, null);
     }
 
+    /**
+     * <div lang="zh-cn">得到系统剪贴板中地字符串类型地数据。</div>
+     * @return  <div lang="zh-cn">字符串，如果没有则返回null。</div>
+     */
     public static String getClipboardText()
     {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 public class Test1 {
     public static void main(String[] args) {
+        System.out.println(IOHelpers.getExtension("c:/1.txt"));
         /*
         System.out.println(CommonHelpers.toString(new String[]{"a","3"}));
         System.out.println(CommonHelpers.toString(Arrays.asList(3,5,8)));

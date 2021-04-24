@@ -1,6 +1,7 @@
 package 批量生成学生卡;
 
 import com.yzk18.GUI.GUI;
+import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.IOHelpers;
 import com.yzk18.commons.ImageHelpers;
 import com.yzk18.docs.ExcelHelpers;
@@ -16,6 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Main {
+    public static <T> boolean isEmpty(T[] strs)
+    {
+        return true;
+    }
     public static void main(String[] args)
     {
         File fileDir = new File(GUI.dirOpenBox("请选择文件夹"));

@@ -12,7 +12,19 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
 
+/**
+ * <div lang="zh-cn">二维码相关工具类。</div>
+ */
 public class QRCodeHelpers {
+
+    /**
+     * <div lang="zh-cn">生成条形码图片。</div>
+     * @param text <div lang="zh-cn">放入条形码中的文本内容。</div>
+     * @param format <div lang="zh-cn">条码格式</div>
+     * @param width <div lang="zh-cn">图片宽度</div>
+     * @param height <div lang="zh-cn">图片高度</div>
+     * @return
+     */
     public static BufferedImage generateBarCodeImage(String text, BarcodeFormat format,
                                                      int width, int height)
     {
@@ -29,11 +41,23 @@ public class QRCodeHelpers {
         return buffImg;
     }
 
+    /**
+     * <div lang="zh-cn">生成二维码图片。</div>
+     * @param text <div lang="zh-cn">放入二维码中的文本内容</div>
+     * @param width <div lang="zh-cn">图片宽度。</div>
+     * @param height <div lang="zh-cn">图片高度。</div>
+     * @return
+     */
     public static BufferedImage generateQRCodeImage(String text, int width, int height)
     {
         return generateBarCodeImage(text,BarcodeFormat.QR_CODE,width,height);
     }
 
+    /**
+     * <div lang="zh-cn">尝试从inStream这个流中解析出来条形码。</div>
+     * @param inStream
+     * @return
+     */
     public static Result parseImage(InputStream inStream)
     {
         MultiFormatReader multiFormatReader = new MultiFormatReader();
@@ -57,6 +81,11 @@ public class QRCodeHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">尝试从imgBytes这个字节数组数据中解析出来条形码。</div>
+     * @param imgBytes
+     * @return
+     */
     public static  Result parseImage(byte[] imgBytes)
     {
         try(InputStream inStream = new ByteArrayInputStream(imgBytes))
@@ -69,6 +98,11 @@ public class QRCodeHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">尝试从file这个文件中解析出来条形码。</div>
+     * @param file
+     * @return
+     */
     public static  Result parseImage(File file)
     {
         try(InputStream inStream = new FileInputStream(file))
@@ -81,6 +115,11 @@ public class QRCodeHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn"><div lang="zh-cn">尝试从fileName这个文件中解析出来条形码。</div></div>
+     * @param fileName
+     * @return
+     */
     public static  Result parseImage(String fileName)
     {
         return parseImage(new File(fileName));

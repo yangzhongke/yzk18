@@ -4,6 +4,7 @@ import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.beanutils.ConvertUtils;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,12 @@ public class CommonHelpers {
         JavaTimeConverters.registerAll(datePatterns);
     }
 
+    /**
+     * <div lang="zh-cn">
+     *  创建可以对File、LocalDate、LocalTime、LocalDate等类型进行Json处理的Gson对象。
+     * </div>
+     * @return
+     */
     public static Gson createGson()
     {
         GsonBuilder gsonBuilder = Converters.registerAll(new GsonBuilder());
@@ -32,16 +39,33 @@ public class CommonHelpers {
         return gson;
     }
 
+    /**
+     * <div lang="zh-cn">把Json字符串解析为clz类型对象（兼容File、LocalDate、LocalTime、LocalDate等类型）</div>
+     * @param jsonString
+     * @param clz
+     * @param <T>
+     * @return
+     */
     public static <T> T parseJson(String jsonString,Class<T> clz)
     {
         return (T)createGson().fromJson(jsonString,clz);
     }
 
+    /**
+     * <div lang="zh-cn">把对象转换为Json字符串（兼容File、LocalDate、LocalTime、LocalDate等类型）</div>
+     * @param obj
+     * @return
+     */
     public static String toJsonString(Object obj)
     {
         return createGson().toJson(obj);
     }
 
+    /**
+     * <div lang="zh-cn">把对象obj转换为可读性强的字符串。</div>
+     * @param obj
+     * @return
+     */
     public static String toString(Object obj)
     {
         if(obj==null)
@@ -87,18 +111,34 @@ public class CommonHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">把Double类型转换为字符串，保留两位小数</div>
+     * @param d
+     * @return
+     */
     public static String toString(Double d)
     {
         DecimalFormat df = new DecimalFormat("#.00");
         return df.format(d);
     }
 
+    /**
+     * <div lang="zh-cn">把Float类型转换为字符串，保留两位小数</div>
+     * @param
+     * @return
+     */
     public static String toString(Float f)
     {
         DecimalFormat df = new DecimalFormat("#.00");
         return df.format(f);
     }
 
+    /**
+     * <div lang="zh-cn">生成一个把字符串s重复count遍的字符串。</div>
+     * @param s
+     * @param count
+     * @return
+     */
     public static String repeat(String s,int count)
     {
         StringBuilder sb = new StringBuilder();
@@ -109,11 +149,19 @@ public class CommonHelpers {
         return sb.toString();
     }
 
+    /**
+     * <div lang="zh-cn">用可读性强的格式，打印对象obj到标准输出。</div>
+     * @param obj
+     */
     public static void println(Object obj)
     {
         System.out.println(toString(obj));
     }
 
+    /**
+     * <div lang="zh-cn">从标准输入读入一行字符串。</div>
+     * @return
+     */
     public static String readLine()
     {
         //https://blog.csdn.net/zbuger/article/details/50933385
@@ -125,25 +173,45 @@ public class CommonHelpers {
         return scanner.nextLine();
     }
 
-    public static int readInt()
+    /**
+     * <div lang="zh-cn">从标准输入读入一行字符串，并且尝试转换为Integer。</div>
+     * @return <div lang="zh-cn">转换为的结果，如果输入的不是合法的整数，则返回null。</div>
+     */
+    public static Integer readInt()
     {
         String s = readLine();
-        return Integer.parseInt(s);
+        try
+        {
+            return Integer.parseInt(s);
+        }
+        catch (NumberFormatException ex)
+        {
+            return null;
+        }
     }
 
-    public static boolean isEmpty(String[] strs)
+    /**
+     * <div lang="zh-cn">判断数组strs是否是长度为0的数组或者为null。</div>
+     * @param array
+     * @return
+     */
+    public static <T> boolean isEmpty(T[] array)
     {
-        if(strs==null)
+        if(array==null)
         {
             return true;
         }
-        if(strs.length<=0)
+        if(array.length<=0)
         {
             return true;
         }
         return false;
     }
 
+    /**
+     * <div lang="zh-cn">关闭c，如果关闭失败，则抛出RuntimeException。</div>
+     * @param c
+     */
     public static void close(Closeable c)
     {
         if(c!=null)
@@ -156,6 +224,10 @@ public class CommonHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">安静地关闭c，如果关闭失败，则不抛出异常。</div>
+     * @param c
+     */
     public static void closeQuietly(Closeable c)
     {
         if(c!=null)
@@ -168,6 +240,13 @@ public class CommonHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">尝试把value转换为targetClass类型地对象。</div>
+     * @param value
+     * @param targetClass
+     * @param <T>
+     * @return
+     */
     public static <T> T convert(Object value,Class<T> targetClass)
     {
         if(value==null)
@@ -178,34 +257,64 @@ public class CommonHelpers {
         {
             return (T)value;
         }
-        return (T)ConvertUtils.convert(value,targetClass);
+        return (T) ConvertUtils.convert(value,targetClass);
     }
 
+    /**
+     * <div lang="zh-cn">把obj对象转换为Double类型。</div>
+     * @param obj
+     * @return
+     */
     public static Double toDouble(Object obj)
     {
         return (Double)ConvertUtils.convert(obj,Double.class);
     }
 
+    /**
+     * <div lang="zh-cn">把obj对象转换为Integer类型。</div>
+     * @param obj
+     * @return
+     */
     public static Integer toInt(Object obj)
     {
         return (Integer)ConvertUtils.convert(obj,Integer.class);
     }
 
+    /**
+     * <div lang="zh-cn">把obj对象转换为Boolean类型。</div>
+     * @param obj
+     * @return
+     */
     public static Boolean toBoolean(Object obj)
     {
         return (Boolean)ConvertUtils.convert(obj,Boolean.class);
     }
 
+    /**
+     * <div lang="zh-cn">把date对象转换为LocalDate类型。</div>
+     * @param date
+     * @return
+     */
     public static LocalDate toLocalDate(Date date)
     {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    /**
+     * <div lang="zh-cn">把date对象转换为LocalDateTime类型。</div>
+     * @param date
+     * @return
+     */
     public static LocalDateTime toLocalDateTime(Date date)
     {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    /**
+     * <div lang="zh-cn">把obj对象转换为LocalDate类型。</div>
+     * @param obj
+     * @return
+     */
     public static LocalDate toLocalDate(Object obj)
     {
         if(obj==null)
@@ -240,6 +349,11 @@ public class CommonHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">把obj对象转换为LocalTime类型。</div>
+     * @param obj
+     * @return
+     */
     public static LocalTime toLocalTime(Object obj)
     {
         if(obj==null)
@@ -274,6 +388,11 @@ public class CommonHelpers {
         }
     }
 
+    /**
+     * <div lang="zh-cn">把obj对象转换为LocalDateTime类型。</div>
+     * @param obj
+     * @return
+     */
     public static LocalDateTime toLocalDateTime(Object obj)
     {
         if(obj==null)
