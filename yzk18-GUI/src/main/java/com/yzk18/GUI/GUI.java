@@ -1,9 +1,14 @@
 package com.yzk18.GUI;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +20,9 @@ import com.github.lgooddatepicker.zinternaltools.JIntegerTextField;
 import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.ReflectionHelpers;
 
-
+/**
+ * <div lang="zh-cn">各种简化的对话框等GUI相关的工具类。</div>
+ */
 public class GUI {
 
     static
@@ -46,7 +53,6 @@ public class GUI {
             return;
         }
         dummyFrame = new DummyFrame();
-
         mainThread = Thread.currentThread();
         mainThread.setUncaughtExceptionHandler((t,e)->{
             //closeDummyFrame() when unhandled exception is thrown in main thread
@@ -80,31 +86,52 @@ public class GUI {
         }
     }
 
+    /**
+     * <div lang="zh-cn">获取用户显示TaskBar中对应内容的隐藏窗口</div>
+     * @return
+     */
     public static DummyFrame getDummyFrame()
     {
         showDummyFrameIfNeeded();
         return dummyFrame;
     }
 
+    /**
+     * <div lang="zh-cn">弹出普通消息对话框。</div>
+     * @param message <div lang="zh-cn">消息</div>
+     */
     public static void msgBox(Object message)
     {
         showDummyFrameIfNeeded();
         JOptionPane.showMessageDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.INFORMATION_MESSAGE);
     }
 
-
+    /**
+     * <div lang="zh-cn">弹出报错消息对话框。</div>
+     * @param message <div lang="zh-cn">消息</div>
+     */
     public static void errorBox(Object message)
     {
         showDummyFrameIfNeeded();
         JOptionPane.showMessageDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * <div lang="zh-cn">弹出包含【是】、【否】两个按钮的消息对话框</div>
+     * @param message <div lang="zh-cn">消息</div>
+     * @return <div lang="zh-cn">如果点击了【是】则返回true，否则返回false</div>
+     */
     public static boolean yesNoBox(Object message)
     {
         int ret = JOptionPane.showConfirmDialog(dummyFrame,CommonHelpers.toString(message),null,JOptionPane.YES_NO_OPTION);
         return ret==JOptionPane.YES_OPTION;
     }
 
+    /**
+     * <div lang="zh-cn">弹出包含【确认】、【取消】两个按钮的消息对话框</div>
+     * @param message <div lang="zh-cn">消息</div>
+     * @return <div lang="zh-cn">如果点击了【确认】则返回true，否则返回false</div>
+     */
     public static boolean okCancelBox(Object message)
     {
         showDummyFrameIfNeeded();
@@ -112,6 +139,12 @@ public class GUI {
         return ret==JOptionPane.OK_OPTION;
     }
 
+    /**
+     * <div lang="zh-cn">弹出允许用户输入一段字符串的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">初始值</div>
+     * @return <div lang="zh-cn">用户输入的字符串，如果点击了取消，则返回null</div>
+     */
     public static String inputBox(Object message,Object initialValue)
     {
         showDummyFrameIfNeeded();
@@ -127,11 +160,22 @@ public class GUI {
         }
     }
 
+    /**
+     * <div lang="zh-cn">弹出允许用户输入一段字符串的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">用户输入的字符串，如果点击了取消，则返回null</div>
+     */
     public static String inputBox(Object message)
     {
         return inputBox(message,"");
     }
 
+    /**
+     * <div lang="zh-cn">弹出允许用户输入一个整数的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">初始值</div>
+     * @return <div lang="zh-cn">用户输入的值，如果点击了取消，则返回null</div>
+     */
     public static Integer intBox(Object message,Integer initialValue)
     {
         showDummyFrameIfNeeded();
@@ -158,11 +202,22 @@ public class GUI {
         return intField.getValue();
     }
 
-    public static int intBox(Object message)
+    /**
+     * <div lang="zh-cn">弹出允许用户输入一个整数的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">用户输入的值，如果点击了取消，则返回null</div>
+     */
+    public static Integer intBox(Object message)
     {
         return intBox(message,null);
     }
 
+    /**
+     * <div lang="zh-cn">弹出允许用户输入一个double值的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">用户输入的值，如果点击了取消，则返回null</div>
+     * @return <div lang="zh-cn"></div>
+     */
     public static Double doubleBox(Object message,Double initialValue)
     {
         showDummyFrameIfNeeded();
@@ -189,16 +244,35 @@ public class GUI {
         return doubleField.getValue();
     }
 
+    /**
+     * <div lang="zh-cn">弹出允许用户输入一个double值的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">用户输入的值，如果点击了取消，则返回null</div>
+     */
     public static Double doubleBox(Object message)
     {
         return doubleBox(message,null);
     }
 
+    /**
+     * <div lang="zh-cn">弹出一个有多个可选值的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">默认选中的值</div>
+     * @param selectionItems <div lang="zh-cn">可选值</div>
+     * @return <div lang="zh-cn">用户选择的值，如果没有选择值则返回null</div>
+     */
     public static String choiceBox(Object message, String initialValue, Collection<String> selectionItems)
     {
         return choiceBox(message,initialValue,selectionItems.toArray(new String[selectionItems.size()]));
     }
 
+    /**
+     * <div lang="zh-cn">弹出一个有多个可选值的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">默认选中的值</div>
+     * @param selectionItems <div lang="zh-cn">可选值</div>
+     * @return <div lang="zh-cn">用户选择的值，如果没有选择值则返回null</div>
+     */
     public static String choiceBox(Object message, String initialValue, String... selectionItems)
     {
         showDummyFrameIfNeeded();
@@ -207,16 +281,37 @@ public class GUI {
         return (String)ret;
     }
 
+    /**
+     * <div lang="zh-cn">弹出一个有多个可选值的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param selectionItems <div lang="zh-cn">可选值</div>
+     * @return <div lang="zh-cn">用户选择的值，如果没有选择值则返回null</div>
+     */
     public static String choiceBox(Object message, Collection<String> selectionItems)
     {
         return choiceBox(message,selectionItems.toArray(new String[selectionItems.size()]));
     }
 
+    /**
+     * <div lang="zh-cn">弹出一个有多个可选值的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param selectionItems <div lang="zh-cn">可选值</div>
+     * @return <div lang="zh-cn">用户选择的值，如果没有选择值则返回null</div>
+     */
     public static String choiceBox(Object message, String... selectionItems)
     {
         return choiceBox(message,"",selectionItems);
     }
 
+    /**
+     * <div lang="zh-cn">弹出有多个输入内容的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param labels <div lang="zh-cn">分别是各个输入内容项的显示的提示文本</div>
+     * @param initialValues <div lang="zh-cn">每个控件的初始值，可空或者数量可以与labels的数量不一致</div>
+     * @param types <div lang="zh-cn">每个输入域的数据类型，对话框会根据数据类型生成合适的控件。可空或者数量可以与labels的数量不一致。对于File、int、double、LocalDate、
+     *      *      * LocalDateTime、LocalTime、boolean等支持个性化编辑器，其他都用普通文本编辑器。</div>
+     * @return <div lang="zh-cn">各个输入内容的String类型的值，数量和labels的数量一致；如果用户点击了【取消】按钮，则返回null</div>
+     */
     public static String[] multiInputBox(Object message,Collection<String> labels,
                                          Collection<Object> initialValues,Collection<Class> types)
     {
@@ -234,6 +329,12 @@ public class GUI {
                 initValuesArray,typesArray);
     }
 
+    /**
+     * <div lang="zh-cn">弹出有多个输入内容的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param labels <div lang="zh-cn">分别是各个输入内容项的显示的提示文本</div>
+     * @return <div lang="zh-cn">各个输入内容的String类型的值，数量和labels的数量一致；如果用户点击了【取消】按钮，则返回null</div>
+     */
     public static String[] multiInputBox(Object message,String... labels)
     {
         return multiInputBox(message,labels,null,null);
@@ -353,6 +454,15 @@ public class GUI {
         }
     }
 
+    /**
+     * <div lang="zh-cn">弹出有多个输入内容的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param labels <div lang="zh-cn">分别是各个输入内容项的显示的提示文本</div>
+     * @param initialValues <div lang="zh-cn">每个控件的初始值，可空或者数量可以与labels的数量不一致</div>
+     * @param types <div lang="zh-cn">每个输入域的数据类型，对话框会根据数据类型生成合适的控件。可空或者数量可以与labels的数量不一致。 对于File、int、double、LocalDate、
+     *      * LocalDateTime、LocalTime、boolean等支持个性化编辑器，其他都用普通文本编辑器。</div>
+     * @return <div lang="zh-cn">各个输入内容的String类型的值，数量和labels的数量一致；如果用户点击了【取消】按钮，则返回null</div>
+     */
     public static String[] multiInputBox(Object message,String[] labels,Object[] initialValues,Class[] types)
     {
         showDummyFrameIfNeeded();
@@ -447,6 +557,13 @@ public class GUI {
         return results;
     }
 
+    /**
+     * <div lang="zh-cn">弹出有多个输入内容的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param data <div lang="zh-cn">多个项的设置，key是显示的名字，值是初始值（可以为null），如果值不是null，则用初始值的类型来设定编辑器。对于File、int、double、LocalDate、
+     *      * LocalDateTime、LocalTime、boolean等支持个性化编辑器，其他都用普通文本编辑器。</div>
+     * @return <div lang="zh-cn"></div>
+     */
     public static Map<String,String> multiInputBox(Object message,Map<String,Object> data)
     {
         String[] labels = new String[data.size()];
@@ -475,8 +592,15 @@ public class GUI {
         return returnedMap;
     }
 
-
-
+    /**
+     * <div lang="zh-cn">弹出用data对象构造含有多输入项内容的对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param data <div lang="zh-cn">根据这个对象来构建多个输入项内容，遵从JavaBean规范，同时支持chain setter方法。
+     * 属性的名字为提示消息，属性的值为初始值，根据属性的类型来构建编辑器。对于File、int、double、LocalDate、
+     * LocalDateTime、LocalTime、boolean等支持个性化编辑器，其他都用普通文本编辑器。</div>
+     * @param <T> <div lang="zh-cn"></div>
+     * @return <div lang="zh-cn"></div>
+     */
     public static <T> T objectInputBox(Object message,T data)
     {
         if(data==null)
@@ -523,11 +647,22 @@ public class GUI {
         }
     }
 
+    /**
+     * <div lang="zh-cn">弹出日期选择对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">选择的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static LocalDate dateBox(Object message)
     {
         return dateBox(message,null);
     }
 
+    /**
+     * <div lang="zh-cn">弹出日期选择对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">初始值</div>
+     * @return <div lang="zh-cn">选择的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static LocalDate dateBox(Object message, LocalDate initialValue)
     {
         showDummyFrameIfNeeded();
@@ -554,11 +689,22 @@ public class GUI {
         return datePicker.getDate();
     }
 
+    /**
+     * <div lang="zh-cn">弹出日期时间选择对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">选择的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static LocalDateTime datetimeBox(Object message)
     {
         return datetimeBox(message,null);
     }
 
+    /**
+     * <div lang="zh-cn">弹出日期时间选择对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">初始值</div>
+     * @return <div lang="zh-cn">选择的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static LocalDateTime datetimeBox(Object message, LocalDateTime initialValue)
     {
         showDummyFrameIfNeeded();
@@ -586,11 +732,22 @@ public class GUI {
         return picker.getDateTimeStrict();
     }
 
+    /**
+     * <div lang="zh-cn">弹出日期选择对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">选择的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static LocalTime timeBox(Object message)
     {
         return timeBox(message,null);
     }
 
+    /**
+     * <div lang="zh-cn">弹出日期选择对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param initialValue <div lang="zh-cn">初始值</div>
+     * @return <div lang="zh-cn">选择的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static LocalTime timeBox(Object message, LocalTime initialValue)
     {
         showDummyFrameIfNeeded();
@@ -618,6 +775,11 @@ public class GUI {
         return picker.getTime();
     }
 
+    /**
+     * <div lang="zh-cn">弹出密码对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">输入的值，如果点击了【取消】按钮，则返回null</div>
+     */
     public static String passwordBox(Object message)
     {
         showDummyFrameIfNeeded();
@@ -640,6 +802,11 @@ public class GUI {
         return pwd;
     }
 
+    /**
+     * <div lang="zh-cn">弹出登录对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @return <div lang="zh-cn">如果点击了【取消】按钮，则返回null；否则返回长度为2的数组，第一个元素为用户输入的用户名，第二个元素为用户输入的密码。</div>
+     */
     public static String[] loginBox(Object message)
     {
         showDummyFrameIfNeeded();
@@ -706,11 +873,23 @@ public class GUI {
         return new String[]{userName,password};
     }
 
+    /**
+     * <div lang="zh-cn">弹出包含多个按钮的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param buttons <div lang="zh-cn">多个按钮的显示文本</div>
+     * @return <div lang="zh-cn">如果点击右上角的【X】关闭了对话框，则返回null；否则返回被点击的按钮的文本。</div>
+     */
     public  static String buttonsBox(Object message,Collection<String> buttons)
     {
         return buttonsBox(message,buttons.toArray(new String[buttons.size()]));
     }
 
+    /**
+     * <div lang="zh-cn">弹出包含多个按钮的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param buttons <div lang="zh-cn">多个按钮的显示文本</div>
+     * @return <div lang="zh-cn">如果点击右上角的【X】关闭了对话框，则返回null；否则返回被点击的按钮的文本。</div>
+     */
     public  static String buttonsBox(Object message,String... buttons)
     {
         showDummyFrameIfNeeded();
@@ -727,20 +906,70 @@ public class GUI {
         }
     }
 
+    /**
+     * <div lang="zh-cn">弹出显示图片的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param imgPath <div lang="zh-cn">图片路径</div>
+     * @param buttons <div lang="zh-cn">多个按钮的显示文本</div>
+     * @return <div lang="zh-cn">如果点击右上角的【X】关闭了对话框，则返回null；否则返回被点击的按钮的文本。</div>
+     */
     public static String imgBox(Object message,String imgPath,String... buttons)
+    {
+        ImageIcon imgIcon = new ImageIcon(imgPath);
+        return imgBox(message,imgIcon,buttons);
+    }
+
+    /**
+     * <div lang="zh-cn">弹出显示图片的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param image <div lang="zh-cn">图片对象</div>
+     * @param buttons <div lang="zh-cn">多个按钮的显示文本</div>
+     * @return <div lang="zh-cn">如果点击右上角的【X】关闭了对话框，则返回null；否则返回被点击的按钮的文本。</div>
+     */
+    public static String imgBox(Object message,Image image,String... buttons)
+    {
+        return imgBox(message,new ImageIcon(image),buttons);
+    }
+
+    /**
+     *  <div lang="zh-cn">弹出显示图片的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param imageBytes <div lang="zh-cn">图片内容的字节数组</div>
+     * @param buttons <div lang="zh-cn">多个按钮的显示文本</div>
+     * @return <div lang="zh-cn">如果点击右上角的【X】关闭了对话框，则返回null；否则返回被点击的按钮的文本。</div>
+     */
+    public static String imgBox(Object message,byte[] imageBytes,String... buttons)
+    {
+        try(InputStream inStream = new ByteArrayInputStream(imageBytes))
+        {
+            BufferedImage bufferedImage = ImageIO.read(inStream);
+            return imgBox(message,new ImageIcon(bufferedImage),buttons);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     *  <div lang="zh-cn">弹出显示图片的对话框</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param imageIcon <div lang="zh-cn">图片</div>
+     * @param buttons <div lang="zh-cn">多个按钮的显示文本</div>
+     * @return <div lang="zh-cn">如果点击右上角的【X】关闭了对话框，则返回null；否则返回被点击的按钮的文本。</div>
+     */
+    public static String imgBox(Object message,ImageIcon imageIcon,String... buttons)
     {
         showDummyFrameIfNeeded();
 
         Dimension halfSize = getDefaultDialogSize();
-
-        ImageIcon imgIcon = new ImageIcon(imgPath);
 
         JPanel panel = new JPanel();
         panel.setPreferredSize(halfSize);
         JLabel labelMsg = new JLabel(CommonHelpers.toString(message));
         panel.add(labelMsg);
 
-        JLabel labelImg = new JLabel(imgIcon);
+        JLabel labelImg = new JLabel(imageIcon);
         JScrollPane scrollPane = new JScrollPane(labelImg);
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -763,48 +992,6 @@ public class GUI {
         }
     }
 
-    public static String textBox(Object message,String text,Collection<String> buttons)
-    {
-        String[] buttonsArray = null;
-        if(buttons!=null)
-        {
-            buttonsArray = buttons.toArray(new String[buttons.size()]);
-        }
-        return textBox(message,text,buttonsArray);
-    }
-    public static String textBox(Object message,String text,String... buttons)
-    {
-        showDummyFrameIfNeeded();
-        Dimension halfSize = getDefaultDialogSize();
-
-        JPanel panel = new JPanel();
-        panel.setPreferredSize(halfSize);
-        JLabel label = new JLabel(CommonHelpers.toString(message));
-        JTextArea txtArea = new JTextArea(text);
-        txtArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(txtArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        panel.add(label);
-        panel.add(scrollPane);
-        BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
-        panel.setLayout(boxLayout);
-
-        DefaultFocusAncestorListener.setDefaultFocusedComponent(panel,txtArea);
-
-        int result = JOptionPane.showOptionDialog(dummyFrame, panel, null,
-                JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
-                null, buttons, null);
-        if(result<0)
-        {
-            return null;
-        }
-        else
-        {
-            return buttons[result];
-        }
-    }
-
     private static Dimension getDefaultDialogSize() {
         Dimension screenSize = getScreenSize();
         return new Dimension(screenSize.width / 2, screenSize.height / 2);
@@ -812,6 +999,17 @@ public class GUI {
 
     private static  void setFileFilter(JFileChooser fileChooser,String... extensions)
     {
+        for(String ext : extensions)
+        {
+            if(ext==null||ext.trim().length()<=0)
+            {
+                throw new IllegalArgumentException("extension cannot be null or empty.");
+            }
+            if(ext.contains("*")||ext.startsWith("."))
+            {
+                throw new IllegalArgumentException("extension cannot start with . or contain *");
+            }
+        }
         if(!CommonHelpers.isEmpty(extensions))
         {
             String desc = String.join("|",
@@ -820,6 +1018,13 @@ public class GUI {
         }
     }
 
+    /**
+     * <div lang="zh-cn">弹出文件打开对话框</div>
+     * @param title <div lang="zh-cn">对话框标题</div>
+     * @param extensions <div lang="zh-cn">过滤的扩展名，不以*或者*.开头，
+     * 直接写扩展名即可。比如"jpg"、"png"</div>
+     * @return <div lang="zh-cn">选择的文件的路径，如果没有选择文件而关闭对话框，则返回null。</div>
+     */
     public static String fileOpenBox(String title,String... extensions)
     {
         showDummyFrameIfNeeded();
@@ -837,6 +1042,13 @@ public class GUI {
         return fileChooser.getSelectedFile().toString();
     }
 
+    /**
+     * <div lang="zh-cn">弹出文件打开多文件对话框</div>
+     * @param title <div lang="zh-cn">对话框标题</div>
+     * @param extensions <div lang="zh-cn">过滤的扩展名，不以*或者*.开头，
+     *  * 直接写扩展名即可。比如"jpg"、"png"</div>
+     * @return <div lang="zh-cn">选择的多个文件的路径数组，如果没有选择文件而关闭对话框，则返回null。</div>
+     */
     public static String[] filesOpenBox(String title,String... extensions)
     {
         showDummyFrameIfNeeded();
@@ -882,6 +1094,13 @@ public class GUI {
         return fileChooser;
     }
 
+    /**
+     * <div lang="zh-cn">弹出保存文件对话框，如果选择的文件已经存在，则提示【是否覆盖】</div>
+     * @param title <div lang="zh-cn">对话框标题</div>
+     * @param extensions <div lang="zh-cn">过滤的扩展名，不以*或者*.开头，
+     *  * 直接写扩展名即可。比如"jpg"、"png"</div>
+     * @return <div lang="zh-cn">选择的文件的路径，如果没有选择文件而关闭对话框，则返回null。</div>
+     */
     public static String fileSaveBox(String title,String... extensions)
     {
         showDummyFrameIfNeeded();
@@ -898,6 +1117,11 @@ public class GUI {
         return fileChooser.getSelectedFile().toString();
     }
 
+    /**
+     * <div lang="zh-cn">弹出目录打开对话框</div>
+     * @param title <div lang="zh-cn">对话框标题</div>
+     * @return <div lang="zh-cn">选择的目录的路径，如果没有选择目录而关闭对话框，则返回null。</div>
+     */
     public static String dirOpenBox(String title)
     {
         showDummyFrameIfNeeded();
@@ -916,6 +1140,11 @@ public class GUI {
         return dirName;
     }
 
+    /**
+     * <div lang="zh-cn">弹出目录保存的对话框，如果目录已经存在，则提示【是否覆盖】</div>
+     * @param title <div lang="zh-cn">对话框标题</div>
+     * @return <div lang="zh-cn">选择的目录的路径，如果没有选择目录而关闭对话框，则返回null。</div>
+     */
     public static String dirSaveBox(String title)
     {
         showDummyFrameIfNeeded();
@@ -935,6 +1164,13 @@ public class GUI {
     }
 
     private static ProgressDialog progressDialog;
+
+    /**
+     * <div lang="zh-cn">显示进度显示对话框，非模态对话框。如果对话框关闭了，则再显示对话框。</div>
+     * @param message <div lang="zh-cn">提示消息</div>
+     * @param maximum <div lang="zh-cn">最大值</div>
+     * @param value <div lang="zh-cn">当前值</div>
+     */
     public static void showProgressDialog(Object message,int maximum,int value)
     {
         showDummyFrameIfNeeded();
@@ -952,6 +1188,9 @@ public class GUI {
         });
     }
 
+    /**
+     * <div lang="zh-cn">关闭进度显示对话框</div>
+     */
     public static void closeProgressDialog()
     {
         progressDialog.setVisible(false);
@@ -960,6 +1199,11 @@ public class GUI {
     }
 
     private static IndeterminateProgressDialog indeterminateProgressDialog;
+
+    /**
+     * <div lang="zh-cn">显示“非确定性”进度对话框，非模态对话框。如果对话框关闭了，则再显示对话框。</div>
+     * @param message <div lang="zh-cn"></div>
+     */
     public static void showIndeterminateProgressDialog(Object message)
     {
         showDummyFrameIfNeeded();
@@ -976,6 +1220,9 @@ public class GUI {
         });
     }
 
+    /**
+     * <div lang="zh-cn">关闭“非确定性”进度对话框</div>
+     */
     public static void closeIndeterminateProgressDialog()
     {
         indeterminateProgressDialog.setVisible(false);
@@ -983,18 +1230,30 @@ public class GUI {
         indeterminateProgressDialog = null;
     }
 
+    /**
+     * <div lang="zh-cn">获取屏幕尺寸</div>
+     * @return <div lang="zh-cn"></div>
+     */
     public static Dimension getScreenSize()
     {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         return screenSize;
     }
 
+    /**
+     * <div lang="zh-cn">获取屏幕宽度</div>
+     * @return <div lang="zh-cn"></div>
+     */
     public static int getScreenWidth()
     {
         Dimension screenSize = getScreenSize();
         return screenSize.width;
     }
 
+    /**
+     * <div lang="zh-cn">获取屏幕高度</div>
+     * @return <div lang="zh-cn"></div>
+     */
     public static int getScreenHeight()
     {
         Dimension screenSize = getScreenSize();
