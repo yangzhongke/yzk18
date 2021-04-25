@@ -40,6 +40,22 @@ public class IOHelpers {
     }
 
     /**
+     * <div lang="zh-cn">检测代表字符串的 byte[]的编码</div>
+     * @param bytes
+     * @return
+     */
+    public static String detectTextEncoding(byte[] bytes)
+    {
+        String[] charSetFounded = new String[1];
+        nsDetector detector = new nsDetector();
+        detector.Init(charset->charSetFounded[0] = charset);
+        detector.DoIt(bytes, bytes.length, false);
+        detector.DataEnd();
+        detector.Reset();
+        return  charSetFounded[0];
+    }
+
+    /**
      * <div lang="zh-cn">检测inStream内容的文本编码</div>
      * @param inStream
      * @return <div lang="zh-cn">检测到的编码的名称</div>

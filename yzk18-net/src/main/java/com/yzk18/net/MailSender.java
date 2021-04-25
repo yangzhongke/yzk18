@@ -1,11 +1,9 @@
 package com.yzk18.net;
 
-import com.yzk18.commons.CommonHelpers;
 import com.yzk18.commons.IOHelpers;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
@@ -13,13 +11,16 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+/**
+ * <div lang="zh-cn">SMTP邮件发送器</div>
+ */
 public class MailSender {
     private String hostName;
     private Integer smtpPort;
     private boolean auth=true;
     private String userName;
     private String password;
-    private boolean SSLOnConnect=true;
+    private boolean sSLOnConnect =true;
     private String subject;
     private InternetAddress from;
     private List<InternetAddress> toAddressList= new LinkedList<>();
@@ -28,54 +29,106 @@ public class MailSender {
     private Multipart content;
     private Map<String,byte[]> attachments = new LinkedHashMap<>();
 
+    /**
+     * <div lang="zh-cn">SMTP服务器地址</div>
+     * @param hostName
+     * @return
+     */
     public MailSender setHostName(String hostName) {
         this.hostName = hostName;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">SMTP端口，如果不设置则用默认端口</div>
+     * @param smtpPort
+     * @return
+     */
     public MailSender setSmtpPort(int smtpPort) {
         this.smtpPort = smtpPort;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">设置是否SMTP，默认为true</div>
+     * @param auth
+     * @return
+     */
     public MailSender setAuth(boolean auth) {
         this.auth = auth;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">SMTP用户名</div>
+     * @param userName
+     * @return
+     */
     public MailSender setUserName(String userName) {
         this.userName = userName;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">SMTP密码，有的邮箱服务商要求是授权码，而不是登录密码。</div>
+     * @param password <div lang="zh-cn"></div>
+     * @return
+     */
     public MailSender setPassword(String password) {
         this.password = password;
         return this;
     }
 
-    public MailSender setSSLOnConnect(boolean SSLOnConnect) {
-        this.SSLOnConnect = SSLOnConnect;
+    /**
+     * <div lang="zh-cn">是否使用SSL连接，默认为true</div>
+     * @param sSLOnConnect
+     * @return
+     */
+    public MailSender setSSLOnConnect(boolean sSLOnConnect) {
+        this.sSLOnConnect = sSLOnConnect;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">设置邮件主题</div>
+     * @param subject
+     * @return
+     */
     public MailSender setSubject(String subject) {
         this.subject = subject;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">设置“发送者”地址</div>
+     * @param from <div lang="zh-cn"></div>
+     * @return
+     */
     public MailSender setFrom(InternetAddress from) {
         this.from = from;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">设置“发送者”地址</div>
+     * @param from <div lang="zh-cn">邮箱</div>
+     * @return
+     */
     public MailSender setFrom(String from) {
-        try {
+        try
+        {
             return setFrom(new InternetAddress(from));
         } catch (AddressException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
+    /**
+     * <div lang="zh-cn">设置“发送者”地址</div>
+     * @param from <div lang="zh-cn">邮箱地址</div>
+     * @param personal <div lang="zh-cn">显示的名字</div>
+     * @return
+     */
     public MailSender setFrom(String from,String personal) {
         try
         {
@@ -86,12 +139,23 @@ public class MailSender {
         }
     }
 
-    public MailSender setHtmlMessage(String message)
+    /**
+     * <div lang="zh-cn">设置HTML格式的邮件正文</div>
+     * @param htmlMessage <div lang="zh-cn">html内容</div>
+     * @return
+     */
+    public MailSender setHtmlMessage(String htmlMessage)
     {
-        this.setMessage(message,"text/html;charset=utf-8");
+        this.setMessage(htmlMessage,"text/html;charset=utf-8");
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">设置邮件正文</div>
+     * @param message <div lang="zh-cn">邮件正文字符串</div>
+     * @param mimeType <div lang="zh-cn">mimeType，比如text/plain,text/html等</div>
+     * @return
+     */
     public MailSender setMessage(String message, String mimeType)
     {
         try
@@ -108,26 +172,48 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">设置普通邮件正文</div>
+     * @param message <div lang="zh-cn">文本内容</div>
+     * @return
+     */
     public MailSender setTextMessage(String message)
     {
         return this.setMessage(message,"text/plain;charset=utf-8");
     }
 
+    /**
+     * <div lang="zh-cn">设置邮件正文</div>
+     * @param content <div lang="zh-cn">邮件正文</div>
+     * @return
+     */
     public MailSender setContent(Multipart content)
     {
         this.content = content;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【收件人】</div>
+     * @param addr <div lang="zh-cn">邮件地址</div>
+     * @return
+     */
     public MailSender addTo(InternetAddress addr)
     {
         this.toAddressList.add(addr);
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【收件人】</div>
+     * @param address <div lang="zh-cn">邮件地址</div>
+     * @param personal <div lang="zh-cn">显示名字</div>
+     * @return
+     */
     public MailSender addTo(String address, String personal)
     {
-        try {
+        try
+        {
             this.toAddressList.add(new InternetAddress(address,personal));
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
@@ -135,9 +221,15 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【收件人】</div>
+     * @param address <div lang="zh-cn">邮件地址</div>
+     * @return
+     */
     public MailSender addTo(String address)
     {
-        try {
+        try
+        {
             this.toAddressList.add(new InternetAddress(address));
         } catch (AddressException e) {
             throw new IllegalArgumentException(e);
@@ -145,15 +237,27 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【抄送地址】</div>
+     * @param addr <div lang="zh-cn">邮件地址</div>
+     * @return
+     */
     public MailSender addCC(InternetAddress addr)
     {
         this.ccAddressList.add(addr);
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【抄送地址】</div>
+     * @param address <div lang="zh-cn">邮件地址</div>
+     * @param personal <div lang="zh-cn">显示名字</div>
+     * @return
+     */
     public MailSender addCC(String address, String personal)
     {
-        try {
+        try
+        {
             this.ccAddressList.add(new InternetAddress(address,personal));
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
@@ -161,9 +265,15 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【抄送地址】</div>
+     * @param address <div lang="zh-cn">邮件地址</div>
+     * @return
+     */
     public MailSender addCC(String address)
     {
-        try {
+        try
+        {
             this.ccAddressList.add(new InternetAddress(address));
         } catch (AddressException e) {
             throw new IllegalArgumentException(e);
@@ -171,15 +281,27 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【抄送地址】</div>
+     * @param addr <div lang="zh-cn">邮件地址</div>
+     * @return
+     */
     public MailSender addBCC(InternetAddress addr)
     {
         this.bccAddressList.add(addr);
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【暗抄地址】</div>
+     * @param address <div lang="zh-cn">邮件地址</div>
+     * @param personal <div lang="zh-cn">显示名字</div>
+     * @return
+     */
     public MailSender addBCC(String address, String personal)
     {
-        try {
+        try
+        {
             this.bccAddressList.add(new InternetAddress(address,personal));
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
@@ -187,9 +309,15 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加【暗抄地址】</div>
+     * @param address <div lang="zh-cn">邮件地址</div>
+     * @return
+     */
     public MailSender addBCC(String address)
     {
-        try {
+        try
+        {
             this.bccAddressList.add(new InternetAddress(address));
         } catch (AddressException e) {
             throw new IllegalArgumentException(e);
@@ -197,12 +325,23 @@ public class MailSender {
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加附件</div>
+     * @param displayName <div lang="zh-cn">附件“显示”的文件名</div>
+     * @param bytes <div lang="zh-cn">文件内容的字节数组</div>
+     * @return
+     */
     public MailSender addAttachment(String displayName,byte[] bytes)
     {
         attachments.put(displayName,bytes);
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">增加附件</div>
+     * @param file <div lang="zh-cn">本地的文件</div>
+     * @return
+     */
     public MailSender addAttachment(File file)
     {
         String displayName = file.getName();
@@ -210,6 +349,9 @@ public class MailSender {
         return addAttachment(displayName,bytes);
     }
 
+    /**
+     * <div lang="zh-cn">发送邮件</div>
+     */
     public void send()
     {
         Properties properties = new Properties();
@@ -219,13 +361,15 @@ public class MailSender {
         {
             properties.put("mail.smtp.port", smtpPort);
         }
-        properties.put("mail.smtp.ssl.enable", this.SSLOnConnect);
+        properties.put("mail.smtp.ssl.enable", this.sSLOnConnect);
         properties.put("mail.smtp.auth", this.auth);
         Authenticator authenticator=null;
         if(this.auth)
         {
-            authenticator = new Authenticator() {
-                public PasswordAuthentication getPasswordAuthentication(){
+            authenticator = new Authenticator()
+            {
+                public PasswordAuthentication getPasswordAuthentication()
+                {
                     return new PasswordAuthentication(userName, password);
                 }
             };
@@ -259,7 +403,8 @@ public class MailSender {
             session = Session.getInstance(properties, authenticator);
         }
 
-        try{
+        try
+        {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(this.from);
             for(InternetAddress addr : this.toAddressList)
@@ -277,7 +422,8 @@ public class MailSender {
             message.setSubject(this.subject);
             message.setContent(this.content);
             Transport.send(message);
-        }catch (MessagingException ex) {
+        }catch (MessagingException ex)
+        {
             throw new RuntimeException(ex);
         }
     }

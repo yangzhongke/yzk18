@@ -12,7 +12,7 @@ public class TestJDBC1 {
         JDBCExecutor jdbc = new JDBCExecutor("jdbc:mysql://localhost:3306/test",
                 "root","root");
 
-        List<JDBCRow> rows = jdbc.queryAsMap("select * from reviews");
+        List<JDBCRow> rows = jdbc.query("select * from reviews");
         for(JDBCRow row : rows)
         {
             //System.out.println(row);
