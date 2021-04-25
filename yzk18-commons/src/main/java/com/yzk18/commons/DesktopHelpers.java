@@ -8,7 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * <div lang="zh-cn">桌面操作相关地方法。</div>
+ * <div lang="zh-cn">桌面操作相关的方法。</div>
  */
 public class DesktopHelpers {
 

@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <name>yzk18-docs</name>
-    <description>used for parsing and writing MSWord, MS Excel, PDF files.</description>
+    <description>used for parsing and writing MSWord, MS Excel, and PDF files.</description>
     <url>https://github.com/yangzhongke/yzk18/</url>
     <groupId>com.yzk18</groupId>
     <artifactId>yzk18-docs</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.yzk18</groupId>
             <artifactId>yzk18-commons</artifactId>
-            <version>1.1</version>
+            <version>1.5</version>
         </dependency>
     </dependencies>
     <build>

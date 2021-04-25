@@ -3,8 +3,7 @@ package com.yzk18.docs;
 import com.yzk18.commons.CommonHelpers;
 import org.apache.poi.xwpf.usermodel.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -12,12 +11,21 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
+ * <div lang="zh-cn">用于使用占位符渲染模板文档来渲染Word文档。</div>
  * adapted from: https://blog.csdn.net/qq_38148461/article/details/93658114
  */
 public class WordTemplateRenderer {
-    public static void render(String templateFilename, Map<String,Object> data, String outFile)
+
+    /**
+     * <div lang="zh-cn">读取word模板文件templateFilename，替换data代表的占位符数据，outFile为渲染后的目标文件。</div>
+     * @param templateFile <div lang="zh-cn">模板文件</div>
+     * @param data <div lang="zh-cn">占位符数据，key为占位符名字，比如${姓名}；value为被替换的值，
+     * value的值如果是byte[]类型的，则替换为图片，否则替换为value的字符串格式。</div>
+     * @param outFile <div lang="zh-cn">目标文件</div>
+     */
+    public static void render(File templateFile, Map<String,Object> data, File outFile)
     {
-        try(XWPFDocument doc = WordHelpers.openDocx(templateFilename))
+        try(XWPFDocument doc = WordHelpers.openDocx(templateFile))
         {
             WordTemplateRenderer.inPlaceRender(doc,data);
             WordHelpers.saveToFile(doc,outFile);
@@ -26,30 +34,36 @@ public class WordTemplateRenderer {
         }
     }
 
+    /**
+     * <div lang="zh-cn">读取word模板文件templateFilename，替换data代表的占位符数据，outFile为渲染后的目标文件。</div>
+     * @param templateFilename <div lang="zh-cn">模板文件</div>
+     * @param data <div lang="zh-cn">占位符数据，key为占位符名字，比如${姓名}；value为被替换的值，
+     * value的值如果是byte[]类型的，则替换为图片，否则替换为value的字符串格式。</div>
+     * @param outFileName <div lang="zh-cn">目标文件</div>
+     */
+    public static void render(String templateFilename, Map<String,Object> data, String outFileName)
+    {
+        render(new File(templateFilename),data,new File(outFileName));
+    }
+
+    /**
+     * <div lang="zh-cn">根据模板document以及占位数据map来渲染一份新的word文档</div>
+     * @param document <div lang="zh-cn">模板文档</div>
+     * @param map <div lang="zh-cn">占位符数据，一般是"${姓名}":"张三"这样的键值对。如果值是byte[]类型，则会把byte[]数据当成图片渲染。</div>
+     * @return <div lang="zh-cn">渲染完成的新文档</div>
+     */
     public static XWPFDocument render(XWPFDocument document, Map<String, Object> map)
     {
-        XWPFDocument clonedDoc = clone(document);
+        XWPFDocument clonedDoc = WordHelpers.clone(document);
         inPlaceRender(clonedDoc,map);
         return clonedDoc;
     }
 
-    public static XWPFDocument clone(XWPFDocument document)
-    {
-        try(ByteArrayOutputStream baos = new ByteArrayOutputStream();)
-        {
-            document.write(baos);
-            byte[] bytes = baos.toByteArray();
-            try(ByteArrayInputStream bais = new ByteArrayInputStream(bytes))
-            {
-                return new XWPFDocument(bais);
-            }
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
+    /**
+     * <div lang="zh-cn">在文档document上进行在位的模板占位符替换。</div>
+     * @param document <div lang="zh-cn">被替换的模板文档</div>
+     * @param map <div lang="zh-cn">占位符数据，一般是"${姓名}":"张三"这样的键值对。如果值是byte[]类型，则会把byte[]数据当成图片渲染。</div>
+     */
     public static void inPlaceRender(XWPFDocument document, Map<String, Object> map)
     {
         //1. process tables
@@ -65,7 +79,7 @@ public class WordTemplateRenderer {
         modifyParagraphs(document.getParagraphsIterator(),map);
     }
 
-    public static void modifyParagraphs(Iterator<XWPFParagraph> paragraphs, Map<String, Object> data)
+    private static void modifyParagraphs(Iterator<XWPFParagraph> paragraphs, Map<String, Object> data)
     {
         while (paragraphs.hasNext())
         {

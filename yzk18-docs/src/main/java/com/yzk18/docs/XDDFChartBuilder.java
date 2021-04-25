@@ -3,6 +3,9 @@ package com.yzk18.docs;
 import org.apache.poi.xddf.usermodel.chart.*;
 import java.util.function.BiConsumer;
 
+/**
+ * <div lang="zh-cn">创建图表的构建器</div>
+ */
 public abstract class XDDFChartBuilder {
 
     protected ChartTypes charType;
@@ -20,21 +23,43 @@ public abstract class XDDFChartBuilder {
         this.charType = charType;
     }
 
-    public XDDFChartBuilder setCategoryAxisTitle(String categoryAxisTitle) {
+    /**
+     * <div lang="zh-cn">设置“类别”轴的标题。</div>
+     * @param categoryAxisTitle
+     * @return
+     */
+    public XDDFChartBuilder setCategoryAxisTitle(String categoryAxisTitle)
+    {
         this.categoryAxisTitle = categoryAxisTitle;
         return this;
     }
 
-    public XDDFChartBuilder setValueAxisTitle(String valueAxisTitle) {
+    /**
+     * <div lang="zh-cn">设置“数值”轴的标题。</div>
+     * @param valueAxisTitle
+     * @return
+     */
+    public XDDFChartBuilder setValueAxisTitle(String valueAxisTitle)
+    {
         this.valueAxisTitle = valueAxisTitle;
         return this;
     }
 
-    public XDDFChartBuilder setConfigurator(BiConsumer<XDDFChartData, XDDFChart> consumer) {
+    /**
+     * <div lang="zh-cn">设置对图表进行配置的回调。</div>
+     * @param consumer
+     * @return
+     */
+    public XDDFChartBuilder setConfigurator(BiConsumer<XDDFChartData, XDDFChart> consumer)
+    {
         this.configuratorConsumer = consumer;
         return this;
     }
 
+    /**
+     * <div lang="zh-cn">把数据填充到chart图表中</div>
+     * @param chart
+     */
     public void build(XDDFChart chart)
     {
         XDDFChartData chartData;
@@ -72,5 +97,9 @@ public abstract class XDDFChartBuilder {
         chart.plot(chartData);
     }
 
+    /**
+     * <div lang="zh-cn">填充数据</div>
+     * @param chartData
+     */
     protected abstract void fillData(XDDFChartData chartData);
 }

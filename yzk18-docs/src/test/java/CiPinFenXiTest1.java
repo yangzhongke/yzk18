@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class CiPinFenXiTest1 {
     public static void main(String[] args) {
-        String[] files = IOHelpers.getFiles("E:\\ebooks\\kubernetes\\",true,"pdf");
+        String[] files = IOHelpers.getFilesRecursively("E:\\ebooks\\kubernetes\\","pdf");
         /*
         HashMap<String, Integer> data = new HashMap<>();
         for (String file : files)
