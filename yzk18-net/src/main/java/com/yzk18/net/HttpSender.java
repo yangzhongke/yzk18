@@ -1,22 +1,12 @@
 package com.yzk18.net;
 
-import org.apache.commons.io.IOUtils;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.mozilla.intl.chardet.nsDetector;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Map;
 
 /**
@@ -24,34 +14,19 @@ import java.util.Map;
  */
 public class HttpSender
 {
-    private static String encodeURIComponent(String s)
+    private final OkHttpClient httpClient;
+    private final SimpleCookieJar cookieJar;
+
+    public HttpSender()
     {
-        try
-        {
-            return URLEncoder.encode(s,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void trustAllCertificates(HttpsURLConnection urlConnection)
-            throws NoSuchAlgorithmException, KeyManagementException {
-        TrustManager[] trustManagers = new TrustManager[]{
-                new X509TrustManager() {
-                    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    }
-
-                    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    }
-
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-                }
-        };
-        SSLContext ctx = SSLContext.getInstance("TLS");
-        ctx.init(null,trustManagers,null);
-        urlConnection.setSSLSocketFactory(ctx.getSocketFactory());
+        this.cookieJar = new SimpleCookieJar();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        this.httpClient= builder
+                .cookieJar(this.cookieJar)
+                .sslSocketFactory(OkHttpUtils.createSSLSocketFactory(),
+                        new OkHttpUtils.TrustAllManager())
+                .hostnameVerifier(new OkHttpUtils.TrustAllHostnameVerifier())
+                .retryOnConnectionFailure(true).build();
     }
 
     /**
@@ -62,45 +37,29 @@ public class HttpSender
      */
     public byte[] sendGetBytes(String url, HttpHeaders requestHeaders)
     {
+        Request.Builder requestBuilder =new Request.Builder()
+                .url(url);
+        if(requestHeaders!=null)
+        {
+            StringBuilder sbCookie = new StringBuilder();
+            for(Map.Entry<String,String> cookie : requestHeaders.getCookies().entrySet())
+            {
+                cookieJar.setCookie(url,cookie.getKey(),cookie.getValue());
+            }
+
+            for(String headerName : requestHeaders.getNames())
+            {
+                String headerValue = requestHeaders.get(headerName);
+                requestBuilder.header(headerName,headerValue);
+            }
+        }
+        Request request = requestBuilder.build();
+        Call call = this.httpClient.newCall(request);
         try
         {
-            HttpURLConnection urlConnection = (HttpURLConnection)new URL(url).openConnection();
-            if(urlConnection instanceof HttpsURLConnection)
-            {
-                trustAllCertificates((HttpsURLConnection)urlConnection);
-            }
-
-            urlConnection.setRequestMethod("GET");
-            if(requestHeaders!=null)
-            {
-                StringBuilder sbCookie = new StringBuilder();
-                for(Map.Entry<String,String> cookie : requestHeaders.getCookies().entrySet())
-                {
-                    String name = encodeURIComponent(cookie.getKey());
-                    String value = encodeURIComponent(cookie.getValue());
-                    sbCookie.append(name).append("=").append(value).append(";");
-                }
-                if(sbCookie.length()>0)
-                {
-                    urlConnection.setRequestProperty("Cookie",sbCookie.toString());
-                }
-
-                for(String headerName : requestHeaders.getNames())
-                {
-                    String headerValue = requestHeaders.get(headerName);
-                    urlConnection.setRequestProperty(headerName,headerValue);
-                }
-            }
-            try(InputStream inStream = urlConnection.getInputStream())
-            {
-                return IOUtils.toByteArray(inStream);
-            }
+            return call.execute().body().bytes();
         } catch (IOException e)
         {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (KeyManagementException e) {
             throw new RuntimeException(e);
         }
     }
