@@ -74,6 +74,7 @@ public class HttpSender
         return sendGetBytes(url,null);
     }
 
+    //todo: replace with detectTextEncoding of yzak18-commons-1.5.1
     private static String detectTextEncoding(byte[] bytes)
     {
         String[] charSetFounded = new String[1];

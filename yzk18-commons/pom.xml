@@ -6,7 +6,7 @@
     <url>https://github.com/yangzhongke/yzk18/</url>
     <groupId>com.yzk18</groupId>
     <artifactId>yzk18-commons</artifactId>
-    <version>1.5</version>
+    <version>1.5.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
