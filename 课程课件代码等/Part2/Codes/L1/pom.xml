@@ -13,4 +13,14 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.yzk18</groupId>
+            <artifactId>yzk18-commons</artifactId>
+            <version>1.5</version>
+        </dependency>
+
+
+
+    </dependencies>
 </project>
