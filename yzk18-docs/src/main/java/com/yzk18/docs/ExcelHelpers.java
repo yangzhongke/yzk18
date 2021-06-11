@@ -157,6 +157,37 @@ public class ExcelHelpers {
         return row.getCell(colIndex);
     }
 
+    private static String getFormulaStringValue(Cell cell)
+    {
+        if(cell.getCellType()!=CellType.FORMULA)
+        {
+            throw new IllegalArgumentException("CellType!=FORMULA");
+        }
+        CellType resultType = cell.getCachedFormulaResultType();
+        if(resultType==CellType.STRING)
+        {
+            return cell.getStringCellValue();
+        }
+        else if(resultType==CellType.BLANK)
+        {
+            return "";
+        }
+        else if(resultType==CellType.BOOLEAN)
+        {
+            return Boolean.toString(cell.getBooleanCellValue());
+        }
+        else if(resultType==CellType.NUMERIC)
+        {
+            return Double.toString(cell.getNumericCellValue());
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unknown resultType"
+                    +resultType);
+        }
+    }
+
+
     /**
      * <div lang="zh-cn">获得sheet的第rowIndex行的第colIndex列的Integer类型的值，如果值是空的或者不存在这个单元格，则返回null。</div>
      * @param sheet
@@ -192,6 +223,7 @@ public class ExcelHelpers {
                 boolean b = cell.getBooleanCellValue();
                 return b?1:0;
             case FORMULA:
+                return Integer.parseInt(getFormulaStringValue(cell));
             case NUMERIC:
                 double d = cell.getNumericCellValue();
                 return (int)d;
@@ -238,6 +270,7 @@ public class ExcelHelpers {
                 boolean b = cell.getBooleanCellValue();
                 return b?1.0:0.0;
             case FORMULA:
+                return Double.parseDouble(getFormulaStringValue(cell));
             case NUMERIC:
                 double d = cell.getNumericCellValue();
                 return d;
@@ -287,6 +320,7 @@ public class ExcelHelpers {
                 double d = cell.getNumericCellValue();
                 return Double.toString(d);
             case FORMULA:
+                return getFormulaStringValue(cell);
             case STRING:
                 String s = cell.getStringCellValue();
                 return s;
@@ -328,6 +362,7 @@ public class ExcelHelpers {
             case BOOLEAN:
                 return null;
             case FORMULA:
+                return CommonHelpers.toLocalDate(getFormulaStringValue(cell));
             case NUMERIC:
                 LocalDateTime d = cell.getLocalDateTimeCellValue();
                 return d.toLocalDate();
@@ -372,6 +407,7 @@ public class ExcelHelpers {
             case BOOLEAN:
                 return null;
             case FORMULA:
+                return CommonHelpers.toLocalDateTime(getFormulaStringValue(cell));
             case NUMERIC:
                 LocalDateTime d = cell.getLocalDateTimeCellValue();
                 return d;
