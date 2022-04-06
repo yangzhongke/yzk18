@@ -7,12 +7,10 @@ import java.awt.image.BufferedImage;
 
 public class TestQRCode1 {
     public static void main(String[] args) {
-        BufferedImage buffImg = QRCodeHelpers.generateQRCodeImage("https://www.youzack.com",300,300);
+        BufferedImage buffImg = QRCodeHelpers.generateQRCodeImage("hello world 这是中文 \r\n java",300,300);
         byte[] pngBytes = ImageHelpers.toByteArray(buffImg,"png");
         IOHelpers.writeAllBytes("d:/temp/qr.png",pngBytes);
         Result result = QRCodeHelpers.parseImage("d:/temp/qr.png");
-        System.out.println(result.getText());
-        result = QRCodeHelpers.parseImage("d:/temp/image120.png");
         if(result==null)
         {
             System.out.println("fail");

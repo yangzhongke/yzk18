@@ -1,0 +1,296 @@
+
+杨中科.NET Core教程Part3-29：EF Core中的异步方法
+@杨中科
+172次观看
+
+杨中科.NET Core教程Part3-28：IQueryable是一性把数据都加载
+@杨中科
+428次观看
+
+杨中科.NET Core教程Part3-26：EF Core IQueryable的复用
+@杨中科
+416次观看
+
+杨中科.NET Core教程Part3-25：EF Core IQueryable的延迟执行
+@杨中科
+356次观看
+
+杨中科.NET Core教程Part3-26：EF Core IQueryable的复用
+@杨中科
+374次观看
+
+杨中科.NET Core教程：Part3-24：EF Core客户端评估有时候也很可
+@杨中科
+488次观看
+
+杨中科.NET Core教程：Part3-23：客户端评估和服务器端评估
+@杨中科
+524次观看
+
+杨中科.NET Core教程：Part3-22：EF Core基于关系的复杂查询
+@杨中科
+773次观看
+
+杨中科.NET Core教程Part3-21：EF Core多对多
+@杨中科
+517次观看
+
+杨中科.NET Core教程Part3-20：EF Core一对一
+@杨中科
+512次观看
+
+杨中科.NET Core教程Part3-19：EF Core自引用的组织结构树
+@杨中科
+574次观看
+
+杨中科.NET Core教程Part3-18：EF Core关系配置在任何一方都可以
+@杨中科
+766次观看
+
+杨中科.NET Core教程Part3-17：EF Core单向导航属性
+@杨中科
+685次观看
+
+杨中科.NET Core教程Part3-16：EF Core额外的外键字段
+@杨中科
+523次观看
+
+杨中科.NET Core教程Part3-15：EF Core一对多关系数据的获取
+@杨中科
+571次观看
+
+杨中科.NET Core教程Part3-14：EF Core一对多关系配置
+@杨中科
+739次观看
+
+杨中科.NET Core教程Part3-13：同样的LINQ被翻译为不同的SQL语句
+@杨中科
+730次观看
+
+杨中科.NET教程Part3-12：通过代码查看EFCore的SQL语句
+@杨中科
+529次观看
+
+杨中科.NET教程Part3-11：什么是EFCore做不到的
+@杨中科
+657次观看
+
+杨中科.NET教程Part3-10：EFCore如何操作数据库
+@杨中科
+433次观看
+
+杨中科.NET教程Part3-9：EFCore反向工程
+@杨中科
+552次观看
+
+杨中科.NET教程Part3-8：EFCore其他迁移命令
+@杨中科
+804次观看
+
+杨中科.NET教程Part3-7：EFCore Migration深入
+@杨中科
+708次观看
+
+杨中科.NET教程：Part3-EF Core6-主键无小事
+@杨中科
+801次观看
+
+杨中科.NET教程：Part3-EF Core5-说FluentAPI的时候我们在说啥
+@杨中科
+821次观看
+
+杨中科.NET教程：Part3-EF Core4-FluentAPI哪些不该用
+@杨中科
+845次观看
+
+EFCore，做快乐的“增删改查”程序员，在EF Core中批量操作
+@杨中科
+984次观看
+
+忘掉DBFirst，搭建Entity Framework Core环境的正确姿势
+@杨中科
+743次观看
+
+Entity Framework Core是什么？是不是Dapper更好？
+@杨中科
+582次观看
+
+.NET教程Part2-41：.NET日志系统4_结构化日志和集中日志服务
+@杨中科
+826次观看
+
+.NETCore教程：Part2-40：.NET日志系统3_NLog深入
+@杨中科
+859次观看
+
+Part2-39：.NET日志系统2_NLog
+@杨中科
+664次观看
+
+.NET教程Part2-38：.NET日志系统1_什么是Logging
+@杨中科
+784次观看
+
+杨中科讲.NET Core Part2-37：配置系统6_多配置源的优先级
+@杨中科
+743次观看
+
+杨中科讲.NET Core Part2-36：配置系统5_开发数据库配置提供者
+@杨中科
+668次观看
+
+杨中科讲.NET Core Part2-35：配置系统4_开发自己的配置提供者
+@杨中科
+637次观看
+
+杨中科讲.NET Core Part2-34：配置系统3_其他配置提供者
+@杨中科
+909次观看
+
+杨中科讲.NET Core Part2-33：配置系统2_选项方式读取配置
+@杨中科
+920次观看
+
+杨中科讲.NET Core Part2-32：配置系统1_入门
+@杨中科
+1314次观看
+
+.NET教程：Part2-31：依赖注入6_DI综合案例-3
+@杨中科
+663次观看
+
+.NET教程：Part2-30：依赖注入6_DI综合案例-2
+@杨中科
+609次观看
+
+.NET教程：Part2-29：依赖注入6_DI综合案例-1
+@杨中科
+542次观看
+
+.NET教程：Part2-28：依赖注入5_.NET依赖注入
+@杨中科
+5955次观看
+
+.NET教程：Part2-26：依赖注入3_服务的生命周期
+@杨中科
+540次观看
+
+.NET教程：Part2-25：依赖注入2_.NET中DI服务注册
+@杨中科
+429次观看
+
+.NET教程：Part2-24：依赖注入1_概念
+@杨中科
+461次观看
+
+.NET5教程 Part2-23：LINQ 10 LINQ解决面试问题
+@杨中科
+944次观看
+
+.NET5教程 Part2-22：LINQ 9 LINQ另一种倩影
+@杨中科
+564次观看
+
+.NET5教程 Part2-21：LINQ 8 链式调用
+@杨中科
+392次观看
+
+.NET5教程 Part2-20：LINQ 7 常用扩展方法4
+@杨中科
+412次观看
+
+.NET5教程 Part2-19：LINQ 6 常用扩展方法3
+@杨中科
+435次观看
+
+.NET5教程 Part2-18：LINQ 5 常用扩展方法2
+@杨中科
+370次观看
+
+.NET5教程 Part2-17：LINQ 4 常用扩展方法1
+@杨中科
+530次观看
+
+.NET5教程 Part2-16：LINQ 3 揭秘LINQ方法的背后
+@杨中科
+887次观看
+
+.NET5教程 Part2-15：LINQ 2 Lambda是怎么来的
+@杨中科
+38次观看
+
+.NET5教程 Part2-14：LINQ 1 为啥要学LINQ
+@杨中科
+463次观看
+
+.NET5教程 Part2-13：异步编程11 异步其他问题
+@杨中科
+484次观看
+
+.NET5教程 Part2-12：异步编程10 WhenAll
+@杨中科
+319次观看
+
+.NET5教程Part2-11：异步编程9 CancellationToken
+@杨中科
+910次观看
+
+.NET5教程-Part2-10：异步编程8 不要用Sleep
+@杨中科
+1530次观看
+
+.NET5教程_Part2-9：异步编程7 为什么有的异步方法没标async
+@杨中科
+1206次观看
+
+Part2-8：异步编程6 异步方法不等于多线程
+@杨中科
+2955次观看
+
+.NET5教程 Part2-7：异步编程5 async背后的线程切换
+@杨中科
+1165次观看
+
+.NET5教程：Part2-6：异步编程4 async、await原理揭秘
+@杨中科
+139次观看
+
+.NET5_.NET Core教程：异步编程3-编写异步方法
+@杨中科
+1587次观看
+
+.NET5教程_.NET Core Part2-4异步编程2 async await基本使用
+@杨中科
+25次观看
+
+.NET5教程：Part2-3异步编程1
+@杨中科
+14次观看
+
+.NET5/.NET Core教程：Part2-2-NuGet2
+@杨中科
+1275次观看
+
+.NET5/.NET Core教程：Part2-1-NuGet1
+@杨中科
+100次观看
+
+.NET教程：Part1-5 .NET 5项目结构及程序发布
+@杨中科
+2594次观看
+
+.NET5教程：Part1-3.NET Standard
+@杨中科
+1554次观看
+
+.NET5教程：Part1-2.NET Core的重要问题
+@杨中科
+1458次观看
+
+.NET5教程：Part1-1什么是.NET Core
+@杨中科
+7次观看
+
+没有.NET基础的朋友不要学这套视频
+@杨中科
+1074次观看

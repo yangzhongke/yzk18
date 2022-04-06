@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * <div lang="zh-cn">二维码相关工具类。</div>
@@ -30,9 +31,12 @@ public class QRCodeHelpers {
     {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = null;
+        HashMap<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
+        // 注意要使用 utf-8，因为刚才生成二维码时，使用了utf-8
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         try
         {
-            bitMatrix = qrCodeWriter.encode(text, format, width, height);
+            bitMatrix = qrCodeWriter.encode(text, format, width, height,hints);
         } catch (WriterException e)
         {
             throw new RuntimeException(e);

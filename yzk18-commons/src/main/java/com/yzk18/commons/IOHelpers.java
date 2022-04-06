@@ -424,6 +424,104 @@ public class IOHelpers {
         writeAllLines(fileName,lines,"UTF-8");
     }
 
+
+    /**
+     * <div lang="zh-cn">把字符串数text的内容按照charsetName编码追加写入文件file。</div>
+     * @param file
+     * @param text
+     * @param charsetName
+     */
+    public static void appendAllText(File file,String text,String charsetName)
+    {
+        appendAllText(file.getPath(),text,charsetName);
+    }
+
+    /**
+     * <div lang="zh-cn">把字符串数text的内容按照charsetName编码追加写入文件fileName。</div>
+     * @param fileName
+     * @param text
+     * @param charsetName
+     */
+    public static void appendAllText(String fileName,String text,String charsetName)
+    {
+        mkParentDirs(fileName);
+        try(FileOutputStream fos = new FileOutputStream(fileName,true))
+        {
+            IOUtils.write(text.toCharArray(),fos,charsetName);
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * <div lang="zh-cn">把字符串数text的内容按照UTF-8编码追加写入文件file。</div>
+     * @param file
+     * @param text
+     */
+    public static void appendAllText(File file,String text)
+    {
+        appendAllText(file.getPath(),text,"UTF-8");
+    }
+
+    /**
+     * <div lang="zh-cn">把字符串数text的内容按照UTF-8编码追加写入文件fileName。</div>
+     * @param fileName
+     * @param text
+     */
+    public static void appendAllText(String fileName,String text)
+    {
+        appendAllText(fileName,text,"UTF-8");
+    }
+
+    /**
+     *<div lang="zh-cn">把字符串数组lines的内容按照charsetName编码追加写入文件fileName。</div>
+     * @param fileName
+     * @param lines
+     * @param charsetName
+     */
+    public static void appendAllLines(String fileName,String[] lines,String charsetName)
+    {
+        mkParentDirs(fileName);
+        try(FileOutputStream fos = new FileOutputStream(fileName,true))
+        {
+            IOUtils.writeLines(Arrays.asList(lines), IOUtils.LINE_SEPARATOR_WINDOWS,
+                    fos, charsetName);
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * <div lang="zh-cn">把字符串数组lines的内容按照charsetName编码追加写入文件file。</div>
+     * @param file
+     * @param lines
+     * @param charsetName
+     */
+    public static void appendAllLines(File file,String[] lines,String charsetName)
+    {
+        appendAllLines(file.getPath(),lines,charsetName);
+    }
+
+    /**
+     * <div lang="zh-cn">把字符串数组lines的内容按照UTF-8编码追加写入文件file。</div>
+     * @param file
+     * @param lines
+     */
+    public static void appendAllLines(File file,String[] lines)
+    {
+        appendAllLines(file.getPath(),lines,"UTF-8");
+    }
+
+    /**
+     * <div lang="zh-cn">把字符串数组lines的内容按照UTF-8编码追加写入文件fileName。</div>
+     * @param fileName
+     * @param lines
+     */
+    public static void appendAllLines(String fileName,String[] lines)
+    {
+        appendAllLines(fileName,lines,"UTF-8");
+    }
+
     /**
      * <div lang="zh-cn">把字节数组bytes写入文件file。</div>
      * @param file
