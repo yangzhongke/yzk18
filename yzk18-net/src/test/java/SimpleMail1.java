@@ -2,9 +2,15 @@ import com.yzk18.commons.IOHelpers;
 import com.yzk18.net.MailSender;
 import org.apache.commons.io.IOUtils;
 
+import java.util.Properties;
+
 public class SimpleMail1 {
     public static void main(String[] args) {
         String pwd = IOHelpers.readAllText("E:\\temp\\163pwd.txt");
+
+        Properties properties = new Properties();
+        properties.put("aaa","666");
+
         MailSender sender = new MailSender();
         sender.setHostName("smtp.163.com")
                 .setHtmlMessage("<a href='https://youzack.com'>hello</a><i>附件中是你的工资条，工资38800</i>")

@@ -354,6 +354,14 @@ public class MailSender {
      */
     public void send()
     {
+        send(null);
+    }
+
+    /**
+     * <div lang="zh-cn">发送邮件</div>
+     */
+    public void send(Properties extraProperties)
+    {
         Properties properties = new Properties();
         properties.put("mail.transport.protocol", "SMTP");
         properties.put("mail.host", this.hostName);
@@ -363,6 +371,15 @@ public class MailSender {
         }
         properties.put("mail.smtp.ssl.enable", this.sSLOnConnect);
         properties.put("mail.smtp.auth", this.auth);
+
+        if(extraProperties!=null)
+        {
+            for (Map.Entry<Object,Object> prop:extraProperties.entrySet())
+            {
+                properties.put(prop.getKey(),prop.getValue());
+            }
+        }
+
         Authenticator authenticator=null;
         if(this.auth)
         {
